@@ -27,17 +27,13 @@ class ControllerCartsmsModuleSettings extends CartSms\Controller
             $controller->oc_di->getProxy()->saveSettings($post);
             Extensions\JsonResponse::send(array('redirect' => $controller->link('cartsms/module_settings/actionDefault')));
 
-        }, 'cartsms/settings/actionDefault');
+        }, 'cartsms/module_settings/actionDefault');
     }
 
 
     public function ajaxLogout()
     {
-        $this->runAjax(function (CartSms\Controller $controller, array $post)
-        {
-            $controller->oc_di->getProxy()->logout();
-            Extensions\JsonResponse::send(array('token' => 'guest', 'redirect' => $controller->link('cartsms/sign/actionIn')));
-
-        }, 'cartsms/settings/actionDefault');
+        $this->oc_di->getProxy()->logout();
+        Extensions\JsonResponse::send(array('token' => 'guest', 'redirect' => $this->link('cartsms/sign/actionIn')));
     }
 }

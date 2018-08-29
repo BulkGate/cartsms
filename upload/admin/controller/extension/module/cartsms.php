@@ -1,4 +1,5 @@
 <?php
+
 require_once DIR_SYSTEM.'/library/cartsms/Controller.php';
 require_once DIR_APPLICATION . "controller/marketplace/modification.php";
 
@@ -30,7 +31,7 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/history');
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/inbox');
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/module_about');
-        $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/module_notification');
+        $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/module_notifications');
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/module_settings');
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/payment');
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/sign');
@@ -66,7 +67,7 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
         $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/history');
         $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/inbox');
         $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/module_about');
-        $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/module_notification');
+        $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/module_notifications');
         $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/module_settings');
         $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/payment');
         $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/sign');
@@ -98,7 +99,6 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
             CartSms\Init::AUTHOR,
             CartSms\Init::VERSION,
             CartSms\Init::URL,
-
             CartSms\Init::MODULE_CODE
         )));
 
