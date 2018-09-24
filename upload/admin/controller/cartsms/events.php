@@ -20,7 +20,7 @@ class ControllerCartsmsEvents extends CartSms\Controller
 
         if($return_id)
         {
-            $this->runHook('product_delete', new Extensions\Hook\Variables([
+            $this->runHook('return_status_change_'.$return_status_id, new Extensions\Hook\Variables([
                 'return_id' => (int) $return_id,
                 'return_status_id' => (int) $return_status_id,
                 'return_customer_message' => $comment
@@ -44,5 +44,18 @@ class ControllerCartsmsEvents extends CartSms\Controller
                 'product_id' => (int) $product_id
             ]));
         }
+    }
+
+    /**
+     * admin/model/customer/customer/addCustomer/after
+     * @param string $hook
+     * @param array $input
+     * @param int $customer_id
+     */
+    public function customerAddHook($hook, $input, $customer_id)
+    {
+        $this->runHook('customer_account_new', new Extensions\Hook\Variables(array(
+            'customer_id' => (int) $customer_id,
+        )));
     }
 }

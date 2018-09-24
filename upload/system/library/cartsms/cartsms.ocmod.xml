@@ -80,4 +80,21 @@
             </add>
         </operation>
     </file>
+    <file path="catalog/controller/api/order.php" error="skip">
+        <operation>
+            <search><![CDATA[
+                $json['order_id'] = $this->model_checkout_order->addOrder($order_data);
+            ]]>
+            </search>
+            <add position="after"><![CDATA[
+                $this->event->trigger('bulkgate/cartsms/new/order/hook', array(
+                    'bulkgate/cartsms/new/order/hook',
+                    array(
+                        $json['order_id']
+                    )
+                ));
+            ]]>
+            </add>
+        </operation>
+    </file>
 </modification>

@@ -16,7 +16,7 @@ class ControllerCartsmsEvents extends CartSms\Controller
      */
     public function changeOrderStatusHook($hook, $input, $output)
     {
-        list($order_id, $order_status_id, $comment, $notify) = array_pad($input, 2, null);
+        list($order_id, $order_status_id, $comment, $notify) = array_pad($input, 4, null);
 
         if((isset($_POST['notifySms']) && (int) $_POST['notifySms'] === 1) || !isset($_POST['notifySms']))
         {
@@ -36,7 +36,7 @@ class ControllerCartsmsEvents extends CartSms\Controller
      */
     public function customerAddHook($hook, $input, $customer_id)
     {
-        $this->runHook('customer_new', new Extensions\Hook\Variables(array(
+        $this->runHook('customer_account_new', new Extensions\Hook\Variables(array(
             'customer_id' => (int) $customer_id,
         )));
     }
