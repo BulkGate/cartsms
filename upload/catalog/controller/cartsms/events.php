@@ -1,7 +1,7 @@
 <?php
 require_once DIR_SYSTEM.'/library/cartsms/Controller.php';
 
-use BulkGate\Extensions;
+use BulkGate\Extensions, BulkGate\CartSms\Helpers;
 
 /**
  * @property \Registry $registry
@@ -45,24 +45,32 @@ class ControllerCartsmsEvents extends CartSms\Controller
      * bulkgate/cartsms/new/order/hook
      * @param string $hook
      * @param array $input
-     * @param null $output
      */
-    public function orderAddHook($hook, $input, $output)
+    public function orderAddHook($hook, $input)
     {
         list($order_id) = array_pad($input, 1, null);
 
         $this->runHook('order_new', new Extensions\Hook\Variables([
             'order_id' => (int) $order_id
         ]));
+
+        foreach(Helpers::productsOutOfStock($this->oc_di->getDatabase()) as $product_id)
+        {
+            if(Extensions\Helpers::outOfStockCheck($this->oc_settings, $product_id))
+            {
+                $this->runHook('product_out_of_stock', new Extensions\Hook\Variables([
+                    'product_id' => (int) $product_id
+                ]));
+            }
+        }
     }
 
     /**
      * bulkgate/cartsms/contact/form/hook
      * @param $hook
      * @param $input
-     * @param $output
      */
-    public function contactFormHook($hook, $input, $output)
+    public function contactFormHook($hook, $input)
     {
         list($email, $name, $text) = array_pad($input, 3, null);
 
@@ -72,10 +80,10 @@ class ControllerCartsmsEvents extends CartSms\Controller
                 'customer_email' => $email,
                 'customer_name' => $name,
                 'customer_message' => $text,
-                'customer_message_short_50' => substr($text, 0, 50),
-                'customer_message_short_80' => substr($text, 0, 80),
-                'customer_message_short_100' => substr($text, 0, 100),
-                'customer_message_short_120' => substr($text, 0, 120),
+                'customer_message_short_50' => Helpers::subStr($text, 0, 50),
+                'customer_message_short_80' => Helpers::subStr($text, 0, 80),
+                'customer_message_short_100' => Helpers::subStr($text, 0, 100),
+                'customer_message_short_120' => Helpers::subStr($text, 0, 120),
             )));
         }
     }

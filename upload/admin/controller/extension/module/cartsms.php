@@ -47,11 +47,12 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
         $this->model_setting_event->addEvent('cartsms', 'admin/model/sale/return/addReturnHistory/after', 'cartsms/events/returnGoodsStatus');
         $this->model_setting_event->addEvent('cartsms', 'admin/model/customer/customer/addCustomer/after', 'cartsms/events/customerAddHook');
         $this->model_setting_event->addEvent('cartsms', 'admin/model/catalog/product/deleteProduct/before', 'cartsms/events/productDeleteHook');
+        $this->model_setting_event->addEvent('cartsms', 'admin/model/sale/return/addReturn/after', 'cartsms/events/returnGoods');
         $this->model_setting_event->addEvent('cartsms', 'catalog/model/checkout/order/addOrderHistory/after', 'cartsms/events/changeOrderStatusHook');
         $this->model_setting_event->addEvent('cartsms', 'catalog/model/account/customer/addCustomer/after', 'cartsms/events/customerAddHook');
         $this->model_setting_event->addEvent('cartsms', 'catalog/model/account/return/addReturn/after', 'cartsms/events/returnGoods');
-        $this->model_setting_event->addEvent('cartsms', 'bulkgate/cartsms/new/order/hook', 'cartsms/events/orderAddHook');
-        $this->model_setting_event->addEvent('cartsms', 'bulkgate/cartsms/contact/form/hook', 'cartsms/events/contactFormHook');
+        $this->model_setting_event->addEvent('cartsms', 'catalog/bulkgate/cartsms/new/order/hook', 'cartsms/events/orderAddHook');
+        $this->model_setting_event->addEvent('cartsms', 'catalog/bulkgate/cartsms/contact/form/hook', 'cartsms/events/contactFormHook');
 
         $this->installOcMod();
     }

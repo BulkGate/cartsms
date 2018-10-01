@@ -377,21 +377,24 @@ class HookLoad extends BulkGate\Extensions\Strict implements BulkGate\Extensions
                 )
             ))->getRow();
 
-            $variables->set('product_name', $product->name, '', false);
-            $variables->set('product_model', $product->model, '', false);
-            $variables->set('product_description', trim(strip_tags(html_entity_decode($product->description, ENT_QUOTES))), '', false);
-            $variables->set('product_price', number_format($product->price, 2), '', false);
-            $variables->set('product_price_locale', $this->locale->price($product->price, $variables->get('order_currency')), '', false);
+            if($product)
+            {
+                $variables->set('product_name', $product->name, '', false);
+                $variables->set('product_model', $product->model, '', false);
+                $variables->set('product_description', trim(strip_tags(html_entity_decode($product->description, ENT_QUOTES))), '', false);
+                $variables->set('product_price', number_format($product->price, 2), '', false);
+                $variables->set('product_price_locale', $this->locale->price($product->price, $variables->get('order_currency')), '', false);
 
-            $variables->set('product_quantity', (int) $product->quantity, '', false);
-            $variables->set('product_minimal_quantity', (int) $product->minimum, '', false);
+                $variables->set('product_quantity', (int) $product->quantity, '', false);
+                $variables->set('product_minimal_quantity', (int) $product->minimum, '', false);
 
-            $variables->set('product_sku', $product->sku, '', false);
-            $variables->set('product_upc', $product->upc, '', false);
-            $variables->set('product_ean', $product->ean, '', false);
-            $variables->set('product_jan', $product->jan, '', false);
-            $variables->set('product_isbn', $product->isbn, '', false);
-            $variables->set('product_mpn', $product->mpn, '', false);
+                $variables->set('product_sku', $product->sku, '', false);
+                $variables->set('product_upc', $product->upc, '', false);
+                $variables->set('product_ean', $product->ean, '', false);
+                $variables->set('product_jan', $product->jan, '', false);
+                $variables->set('product_isbn', $product->isbn, '', false);
+                $variables->set('product_mpn', $product->mpn, '', false);
+            }
         }
     }
 
@@ -447,6 +450,5 @@ class HookLoad extends BulkGate\Extensions\Strict implements BulkGate\Extensions
         $this->shop($variables);
         $this->product($variables);
         $this->extension($variables);
-        //ECHO ((string) $variables);die;
     }
 }

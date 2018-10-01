@@ -28,13 +28,27 @@ class ControllerCartsmsEvents extends CartSms\Controller
         }
     }
 
+
     /**
-     * admin/model/catalog/product/deleteProduct/after
+     * admin/model/sale/return/addReturn/after
      * @param string $hook
      * @param array $input
-     * @param null $output
+     * @param int $return_id
      */
-    public function productDeleteHook($hook, $input, $output)
+    public function returnGoods($hook, $input, $return_id)
+    {
+        $this->runHook('product_return', new Extensions\Hook\Variables(array(
+            'return_id' => (int) $return_id,
+        )));
+    }
+
+
+    /**
+     * admin/model/catalog/product/deleteProduct/before
+     * @param string $hook
+     * @param array $input
+     */
+    public function productDeleteHook($hook, $input)
     {
         list($product_id) = array_pad($input, 1, null);
 

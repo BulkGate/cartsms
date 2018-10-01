@@ -34,4 +34,28 @@ class Helpers extends Extensions\Strict
         }
         return 0;
     }
+
+    public static function productsOutOfStock(Database $db, array $output = array())
+    {
+        $products = $db->execute("SELECT `product_id` FROM `{$db->table('product')}` WHERE `quantity` = 0 AND `subtract` = 1 AND `status` = 1");
+
+        foreach($products as $item)
+        {
+            $output[] = (int) $item->product_id;
+        }
+
+        return $output;
+    }
+
+    public static function subStr($s, $start, $length)
+    {
+        if(extension_loaded('mbstring'))
+        {
+            return mb_substr((string) $s, (int) $start, (int) $length);
+        }
+        else
+        {
+            return substr((string) $s, (int) $start, (int) $length);
+        }
+    }
 }
