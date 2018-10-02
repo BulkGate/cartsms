@@ -302,7 +302,7 @@ class HookLoad extends BulkGate\Extensions\Strict implements BulkGate\Extensions
                 SELECT `{$this->db->table('order_history')}`.`order_status_id`, `{$this->db->table('order_history')}`.`comment`, `{$this->db->table('order_status')}`.`name`
                 FROM `{$this->db->table('order_history')}`
                 LEFT JOIN `{$this->db->table('order_status')}` ON `{$this->db->table('order_history')}`.`order_status_id` = `{$this->db->table('order_status')}`.`order_status_id`
-                WHERE `order_id` = %s AND `oc_order_status`.`language_id` = %s
+                WHERE `order_id` = %s AND `{$this->db->table('order_status')}`.`language_id` = %s
                 ORDER BY `{$this->db->table('order_history')}`.`date_added` DESC
                 LIMIT 1",
                 array(
