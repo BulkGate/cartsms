@@ -1,0 +1,3 @@
+[submodule "upload/system/library/cartsms/extensions"]
+	path = upload/system/library/cartsms/extensions
+	url = https://github.com/BulkGate/extensions
