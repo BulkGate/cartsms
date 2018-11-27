@@ -1,14 +1,14 @@
 <?php
 
 require_once DIR_SYSTEM.'/library/cartsms/Controller.php';
-require_once DIR_APPLICATION . "controller/marketplace/modification.php";
+require_once DIR_APPLICATION . "controller/extension/modification.php";
 
 /** 
  * @property \Document $document
  * @property \Response $response
  * @property Cart\User $user
  * @property ModelUserUserGroup $model_user_user_group
- * @property \ModelSettingEvent $model_setting_event
+ * @property \ModelExtensionEvent $model_extension_event
  */
 class ControllerExtensionModuleCartsms extends CartSms\Controller
 {
@@ -19,10 +19,10 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
 
     public function install()
     {
-        $this->load->model('setting/event');
+        $this->load->model('extension/event');
         $this->load->model('user/user_group');
 
-        $this->model_setting_event->deleteEvent('cartsms');
+        $this->model_extension_event->deleteEvent('cartsms');
 
         $this->oc_settings->install();
 
@@ -44,22 +44,22 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'cartsms/wallet');
         $this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/module/cartsms');
 
-        $this->model_setting_event->addEvent('cartsms', 'admin/model/sale/return/addReturnHistory/after', 'cartsms/events/returnGoodsStatus');
-        $this->model_setting_event->addEvent('cartsms', 'admin/model/customer/customer/addCustomer/after', 'cartsms/events/customerAddHook');
-        $this->model_setting_event->addEvent('cartsms', 'admin/model/catalog/product/deleteProduct/before', 'cartsms/events/productDeleteHook');
-        $this->model_setting_event->addEvent('cartsms', 'admin/model/sale/return/addReturn/after', 'cartsms/events/returnGoods');
-        $this->model_setting_event->addEvent('cartsms', 'catalog/model/checkout/order/addOrderHistory/after', 'cartsms/events/changeOrderStatusHook');
-        $this->model_setting_event->addEvent('cartsms', 'catalog/model/account/customer/addCustomer/after', 'cartsms/events/customerAddHook');
-        $this->model_setting_event->addEvent('cartsms', 'catalog/model/account/return/addReturn/after', 'cartsms/events/returnGoods');
-        $this->model_setting_event->addEvent('cartsms', 'catalog/bulkgate/cartsms/new/order/hook', 'cartsms/events/orderAddHook');
-        $this->model_setting_event->addEvent('cartsms', 'catalog/bulkgate/cartsms/contact/form/hook', 'cartsms/events/contactFormHook');
+        $this->model_extension_event->addEvent('cartsms', 'admin/model/sale/return/addReturnHistory/after', 'cartsms/events/returnGoodsStatus');
+        $this->model_extension_event->addEvent('cartsms', 'admin/model/customer/customer/addCustomer/after', 'cartsms/events/customerAddHook');
+        $this->model_extension_event->addEvent('cartsms', 'admin/model/catalog/product/deleteProduct/before', 'cartsms/events/productDeleteHook');
+        $this->model_extension_event->addEvent('cartsms', 'admin/model/sale/return/addReturn/after', 'cartsms/events/returnGoods');
+        $this->model_extension_event->addEvent('cartsms', 'catalog/model/checkout/order/addOrderHistory/after', 'cartsms/events/changeOrderStatusHook');
+        $this->model_extension_event->addEvent('cartsms', 'catalog/model/account/customer/addCustomer/after', 'cartsms/events/customerAddHook');
+        $this->model_extension_event->addEvent('cartsms', 'catalog/model/account/return/addReturn/after', 'cartsms/events/returnGoods');
+        $this->model_extension_event->addEvent('cartsms', 'catalog/bulkgate/cartsms/new/order/hook', 'cartsms/events/orderAddHook');
+        $this->model_extension_event->addEvent('cartsms', 'catalog/bulkgate/cartsms/contact/form/hook', 'cartsms/events/contactFormHook');
 
         $this->installOcMod();
     }
 
     public function uninstall()
     {
-        $this->load->model('setting/event');
+        $this->load->model('extension/event');
         $this->load->model('user/user_group');
 
         $this->oc_settings->uninstall();
@@ -82,7 +82,7 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
         $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'cartsms/wallet');
         $this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'extension/module/cartsms');
 
-        $this->model_setting_event->deleteEventByCode('cartsms');
+        $this->model_extension_event->uninstall('module', 'cartsms');
 
         $this->uninstallOcMod();
     }
@@ -104,7 +104,7 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
             CartSms\Init::MODULE_CODE
         )));
 
-        $refresh = new ControllerMarketplaceModification($this->registry);
+        $refresh = new ControllerExtensionModification($this->registry);
         $refresh->refresh();
     }
 

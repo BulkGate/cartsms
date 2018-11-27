@@ -28,7 +28,7 @@ class Init extends BulkGate\Extensions\Strict
 
     const AUTHOR = 'TOPefekt s.r.o.';
 
-    const VERSION = '6.0.1';
+    const VERSION = '4.5.0';
 
     const MODULE_CODE = 'cartsms';
 
@@ -86,7 +86,7 @@ class Init extends BulkGate\Extensions\Strict
                 'children' => array(
                     array(
                         'name'	   => $translator->translate('dashboard', 'Dashboard'),
-                        'href'     => $url->link('cartsms/dashboard/actionDefault', 'user_token=' . $session->data['user_token'], true),
+                        'href'     => $url->link('cartsms/dashboard/actionDefault', 'token=' . $session->data['token'], true),
                         'children' => array()
                     ),
                     array(
@@ -95,37 +95,37 @@ class Init extends BulkGate\Extensions\Strict
                         'children' => array(
                             array(
                                 'name'	   => $translator->translate('start_campaign','Start Campaign'),
-                                'href'     => $url->link('cartsms/sms_campaign/actionNew', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/sms_campaign/actionNew', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('campaigns','Campaigns'),
-                                'href'     => $url->link('cartsms/sms_campaign/actionDefault', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/sms_campaign/actionDefault', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('inbox','Inbox'),
-                                'href'     => $url->link('cartsms/inbox/actionList', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/inbox/actionList', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('history','History'),
-                                'href'     => $url->link('cartsms/history/actionList', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/history/actionList', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('statistics','Statistics'),
-                                'href'     => $url->link('cartsms/statistics/actionDefault', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/statistics/actionDefault', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('black_list','Black list'),
-                                'href'     => $url->link('cartsms/black_list/actionDefault', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/black_list/actionDefault', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('price_list', 'Price list'),
-                                'href'     => $url->link('cartsms/sms_price/actionList', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/sms_price/actionList', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                         )
@@ -136,17 +136,17 @@ class Init extends BulkGate\Extensions\Strict
                         'children' => array(
                             array(
                                 'name'	   => $translator->translate('buy_credit', 'Buy Credit'),
-                                'href'     => $url->link('cartsms/top/actionUp', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/top/actionUp', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('invoices', 'Invoices'),
-                                'href'     => $url->link('cartsms/payment/actionList', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/payment/actionList', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('payments_data', 'Payment Data'),
-                                'href'     => $url->link('cartsms/wallet/actionDetail', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/wallet/actionDetail', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                         )
@@ -157,34 +157,34 @@ class Init extends BulkGate\Extensions\Strict
                         'children' => array(
                             array(
                                 'name'	   => $translator->translate('user_profile', 'User profile'),
-                                'href'     => $url->link('cartsms/user/actionProfile', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/user/actionProfile', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('admin_sms', 'Admin SMS'),
-                                'href'     => $url->link('cartsms/module_notifications/actionAdmin', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/module_notifications/actionAdmin', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('customer_sms', 'Customer SMS'),
-                                'href'     => $url->link('cartsms/module_notifications/actionCustomer', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/module_notifications/actionCustomer', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('sender_id_settings', 'Sender ID Settings'),
-                                'href'     => $url->link('cartsms/sms_settings/actionDefault', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/sms_settings/actionDefault', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                             array(
                                 'name'	   => $translator->translate('module_settings', 'Module settings'),
-                                'href'     => $url->link('cartsms/module_settings/actionDefault', 'user_token=' . $session->data['user_token'], true),
+                                'href'     => $url->link('cartsms/module_settings/actionDefault', 'token=' . $session->data['token'], true),
                                 'children' => array()
                             ),
                         )
                     ),
                     array(
                         'name'	   => $translator->translate('about_module', 'About module'),
-                        'href'     => $url->link('cartsms/module_about/actionDefault', 'user_token=' . $session->data['user_token'], true),
+                        'href'     => $url->link('cartsms/module_about/actionDefault', 'token=' . $session->data['token'], true),
                         'children' => array()
                     ),
                 )
@@ -200,17 +200,17 @@ class Init extends BulkGate\Extensions\Strict
                 'children' => array(
                     array(
                         'name'	   => $translator->translate('sign_in', 'Sign in'),
-                        'href'     => $url->link('cartsms/sign/actionIn', 'user_token=' . $session->data['user_token'], true),
+                        'href'     => $url->link('cartsms/sign/actionIn', 'token=' . $session->data['token'], true),
                         'children' => array()
                     ),
                     array(
                         'name'	   => $translator->translate('sign_up', 'Sign up'),
-                        'href'     => $url->link('cartsms/sign/actionUp', 'user_token=' . $session->data['user_token'], true),
+                        'href'     => $url->link('cartsms/sign/actionUp', 'token=' . $session->data['token'], true),
                         'children' => array()
                     ),
                     array(
                         'name'	   => $translator->translate('about_module', 'About module'),
-                        'href'     => $url->link('cartsms/about/actionDefault', 'user_token=' . $session->data['user_token'], true),
+                        'href'     => $url->link('cartsms/about/actionDefault', 'token=' . $session->data['token'], true),
                         'children' => array()
                     ),
                 )

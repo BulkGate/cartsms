@@ -38,7 +38,7 @@ abstract class Controller extends \Controller
         $this->oc_settings = $this->oc_di->getSettings();
         $this->oc_proxy = new BulkGate\CartSms\ProxyGenerator();
 
-        $this->load->model('setting/event');
+        $this->load->model('extension/event');
     }
 
     protected function view($title, $presenter, $action, $box = false)
@@ -72,7 +72,7 @@ abstract class Controller extends \Controller
     protected function link($route, array $params = array())
     {
         return BulkGate\CartSms\Helpers::fixUrl(
-            $this->url->link($route, array_merge(array('user_token' => $this->session->data['user_token']), $params), true)
+            $this->url->link($route, array_merge(array('token' => $this->session->data['token']), $params), true)
         );
     }
 
@@ -88,12 +88,12 @@ abstract class Controller extends \Controller
             }
             else
             {
-                $this->response->redirect($this->url->link($fail_redirect, 'user_token=' . $this->session->data['user_token'], true));
+                $this->response->redirect($this->url->link($fail_redirect, 'token=' . $this->session->data['token'], true));
             }
         }
         else
         {
-            $this->response->redirect($this->url->link($fail_redirect, 'user_token=' . $this->session->data['user_token'], true));
+            $this->response->redirect($this->url->link($fail_redirect, 'token=' . $this->session->data['token'], true));
         }
     }
 

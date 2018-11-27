@@ -99,6 +99,9 @@ class Customers extends Extensions\Customers
                     case 'order_date':
                         $customers = $this->getCustomers($this->db->execute("SELECT `customer_id` FROM `{$this->db->table('order')}` WHERE {$this->getSql($filter, 'date_added', 'customer')}"), $customers);
                         break;
+                    case 'store_id':
+                        $customers = $this->getCustomers($this->db->execute("SELECT `customer_id` FROM `{$this->db->table('customer')}` WHERE {$this->getSql($filter, 'store_id', 'customer')}"), $customers);
+                        break;
                 }
                 $filtered = true;
             }
