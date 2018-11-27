@@ -21,7 +21,86 @@
             </add>
         </operation>
     </file>
+    <file path="admin/controller/sale/order.php">
+        <operation>
+            <search><![CDATA[
+                $this->response->setOutput($this->load->view('sale/order_info', $data));
+            ]]>
+            </search>
+            <add position="before"><![CDATA[
+
+            if(class_exists('\CartSms\Init'))
+            {
+                $init = new \CartSms\Init($this->registry);
+
+                if($init->di()->getSettings()->load("static:application_token", false))
+                {
+                    $data['cartsms_css'] = $init->di()->getModule()->getUrl('/'.(defined('BULKGATE_DEV_MODE') ? 'dev' : 'dist').'/css/bulkgate-cartsms.css');
+                    $data['cartsms_application_id'] = $init->di()->getSettings()->load('static:application_id', '');
+                    $data['cartsms_language'] = $init->di()->getSettings()->load('main:language', 'en');
+                    $data['cartsms_widget_api_url'] = $init->di()->getModule()->getUrl('/'.(defined('BULKGATE_DEV_MODE') ? 'dev' : 'dist').'/widget-api/widget-api.js');
+                    $data['cartsms_authenticate'] = \BulkGate\CartSms\Helpers::fixUrl($this->url->link('cartsms/sign/authenticate', 'user_token=' . $this->session->data['user_token'], true));
+                    $data['cartsms_customer_iso'] = \BulkGate\CartSms\Helpers::getCountryCode($init->di()->getDatabase(), isset($order_info['payment_country_id']) ? $order_info['payment_country_id'] : -1);
+                }
+            }
+
+            ]]>
+            </add>
+        </operation>
+    </file>
     <file path="admin/view/template/sale/order_info.twig">
+        <operation>
+            <search><![CDATA[
+                <script type="text/javascript"><!--
+		    ]]>
+            </search>
+            <add position="before"><![CDATA[
+                {% if cartsms_application_id is defined %}
+                <div class="container-fluid">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><i class="fa fa-envelope-o"></i> CartSMS</h3>
+                        </div>
+                        <div class="panel-body">
+                        <div id="cart-sms" style="min-height: 0;">
+                            <div id="react-snack-root"></div>
+                            <div id="react-app-root">
+                                <p>Loading Content</p>
+                            </div>
+                            <script type="application/javascript">
+                                var _bg_client_config = {
+                                    url: {
+                                        authenticationService : {{ cartsms_authenticate|json_encode() }}
+                                    }
+                                };
+                            </script>
+                            <link rel="stylesheet" href="{{ cartsms_css|escape('html_attr') }}" type="text/css"/>
+                            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" type="text/css"/>
+                            <script src="{{ cartsms_widget_api_url }}"></script>
+                            <script type="application/javascript">
+                                var input = _bg_client.parseQuery(location.search);
+
+                                _bg_client.require({{ cartsms_application_id|json_encode() }}, {
+                                    product: "oc",
+                                    language: {{ cartsms_language|json_encode() }},
+                                    view: {
+                                        presenter: 'ModuleComponents',
+                                        action: 'sendSms'
+                                },
+                                params: {
+                                    id: {{ telephone|json_encode() }},
+                                    key: {{ cartsms_customer_iso|json_encode() }}
+                                }
+                              });
+                            </script>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            ]]>
+            </add>
+        </operation>
         <operation>
             <search><![CDATA[
                 <input type="checkbox" name="notify" value="1" id="input-notify" />

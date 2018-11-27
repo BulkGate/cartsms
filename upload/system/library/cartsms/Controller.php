@@ -65,6 +65,7 @@ abstract class Controller extends \Controller
             'header' => $this->load->controller('common/header'),
             'column_left' => $this->load->controller('common/column_left'),
             'footer' => $this->load->controller('common/footer'),
+            'loading' => $this->oc_di->getTranslator()->translate('loading_content', 'Loading Content')
         )));
     }
 
@@ -98,20 +99,21 @@ abstract class Controller extends \Controller
 
     protected function synchronize($now = false)
     {
-        $status = $this->oc_module->statusLoad(); $language = $this->oc_module->languageLoad(); $store = $this->oc_module->storeLoad(); $return = $this->oc_module->returnStatusLoad();
-
-        $now = $now || $status || $language || $store || $return;
-
-        try
+        if($this->oc_settings->load('static:application_token'))
         {
-            $this->oc_di->getSynchronize()->run($this->oc_module->getUrl('/module/settings/synchronize'), $now);
+            $status = $this->oc_module->statusLoad(); $language = $this->oc_module->languageLoad(); $store = $this->oc_module->storeLoad(); $return = $this->oc_module->returnStatusLoad();
 
-            return true;
+            $now = $now || $status || $language || $store || $return;
+            try
+            {
+                $this->oc_di->getSynchronize()->run($this->oc_module->getUrl('/module/settings/synchronize'), $now);
+                return true;
+            }
+            catch (Extensions\IO\InvalidResultException $e)
+            {
+            }
         }
-        catch (Extensions\IO\InvalidResultException $e)
-        {
-            return false;
-        }
+        return false;
     }
 
     protected function runHook($name, Extensions\Hook\Variables $variables)

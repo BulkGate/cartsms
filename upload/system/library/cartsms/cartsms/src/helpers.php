@@ -47,6 +47,20 @@ class Helpers extends Extensions\Strict
         return $output;
     }
 
+    public static function getCountryCode(Database $db, $id)
+    {
+        if($id > 0)
+        {
+            $row = $db->execute($db->prepare("SELECT `iso_code_2` FROM `{$db->table('country')}` WHERE `country_id` = %s", array($id)))->getRow();
+
+            if($row)
+            {
+                return strtolower((string) $row->iso_code_2);
+            }
+        }
+        return '';
+    }
+
     public static function subStr($s, $start, $length)
     {
         if(extension_loaded('mbstring'))
