@@ -27,7 +27,7 @@ class Database extends BulkGate\Extensions\Strict implements BulkGate\Extensions
 
         $result = $this->db->query($sql);
 
-        if(isset($result->rows) && is_array($result->rows) && count($result->num_rows) > 0)
+        if(isset($result->rows) && is_array($result->rows) && $result->num_rows > 0)
         {
             foreach ($result->rows as $key => $item)
             {
