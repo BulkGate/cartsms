@@ -28,7 +28,7 @@ class Init extends BulkGate\Extensions\Strict
 
     const AUTHOR = 'TOPefekt s.r.o.';
 
-    const VERSION = '6.0.1';
+    const VERSION = '6.0.2';
 
     const MODULE_CODE = 'cartsms';
 
