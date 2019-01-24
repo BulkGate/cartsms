@@ -6,7 +6,7 @@
                 <div class="nav-wrapper">
                     <div id="brand-logo">
                         <a class="brand-logo hide-on-med-and-down" href="<?= \BulkGate\Extensions\Escape::htmlAttr($homepage) ?>">
-                            <img alt="prestasms" width="120" src="<?= \BulkGate\Extensions\Escape::htmlAttr($logo) ?>" />
+                            <img alt="cartsms" width="120" src="<?= \BulkGate\Extensions\Escape::htmlAttr($logo) ?>" />
                         </a>
                     </div>
                     <ul class="controls">
