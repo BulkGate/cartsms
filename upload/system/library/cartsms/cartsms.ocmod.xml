@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modification>
     <name>CartSMS - SMS module for OpenCart</name>
-    <version>6.00</version>
+    <version>4.52</version>
     <author>BulkGate</author>
     <link>http://www.cartsms.com/</link>
+    <code>cartsms</code>
     <file path="admin/controller/common/column_left.php">
         <operation>
             <search><![CDATA[
@@ -70,26 +71,26 @@
                             <script type="application/javascript">
                                 var _bg_client_config = {
                                     url: {
-                                        authenticationService : {{ cartsms_authenticate|json_encode() }}
+                                        authenticationService : <?php echo \BulkGate\Extensions\Escape::js($cartsms_authenticate); ?>
                                     }
                                 };
                             </script>
-                            <link rel="stylesheet" href="{{ cartsms_css|escape('html_attr') }}" type="text/css"/>
+                            <link rel="stylesheet" href="<?php echo \BulkGate\Extensions\Escape::url($cartsms_css); ?>" type="text/css"/>
                             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" type="text/css"/>
-                            <script src="{{ cartsms_widget_api_url }}"></script>
+                            <script src="<?php echo \BulkGate\Extensions\Escape::url($cartsms_widget_api_url); ?>"></script>
                             <script type="application/javascript">
                                 var input = _bg_client.parseQuery(location.search);
 
-                                _bg_client.require({{ cartsms_application_id|json_encode() }}, {
+                                _bg_client.require(<?php echo \BulkGate\Extensions\Escape::js($cartsms_application_id); ?>, {
                                     product: "oc",
-                                    language: {{ cartsms_language|json_encode() }},
+                                    language: <?php echo \BulkGate\Extensions\Escape::js($cartsms_language); ?>,
                                     view: {
                                         presenter: 'ModuleComponents',
                                         action: 'sendSms'
                                 },
                                 params: {
-                                    id: {{ telephone|json_encode() }},
-                                    key: {{ cartsms_customer_iso|json_encode() }}
+                                    id: <?php echo \BulkGate\Extensions\Escape::js($telephone); ?>,
+                                    key: <?php echo \BulkGate\Extensions\Escape::js($cartsms_customer_iso); ?>
                                 }
                               });
                             </script>

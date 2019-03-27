@@ -24,11 +24,11 @@ file_exists(_BG_CARTSMS_DIR_.'/extensions/src/debug.php') && require_once _BG_CA
  */
 class Init extends BulkGate\Extensions\Strict
 {
-    const NAME = 'CartSMS';
+    const NAME = 'CartSMS - SMS module for OpenCart';
 
-    const AUTHOR = 'TOPefekt s.r.o.';
+    const AUTHOR = 'BulkGate';
 
-    const VERSION = '4.5.1';
+    const VERSION = '4.5.2';
 
     const MODULE_CODE = 'cartsms';
 
