@@ -14,7 +14,7 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
 {
     public function index()
     {
-        $this->response->redirect($this->url->link('cartsms/module_settings/actionDefault', 'user_token=' . $this->session->data['user_token'], true));
+        $this->response->redirect($this->url->link('cartsms/module_settings/actionDefault', 'token=' . $this->session->data['token'], true));
     }
 
     public function install()

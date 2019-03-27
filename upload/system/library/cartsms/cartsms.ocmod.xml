@@ -39,7 +39,7 @@
                     $data['cartsms_application_id'] = $init->di()->getSettings()->load('static:application_id', '');
                     $data['cartsms_language'] = $init->di()->getSettings()->load('main:language', 'en');
                     $data['cartsms_widget_api_url'] = $init->di()->getModule()->getUrl('/'.(defined('BULKGATE_DEV_MODE') ? 'dev' : 'dist').'/widget-api/widget-api.js');
-                    $data['cartsms_authenticate'] = \BulkGate\CartSms\Helpers::fixUrl($this->url->link('cartsms/sign/authenticate', 'user_token=' . $this->session->data['user_token'], true));
+                    $data['cartsms_authenticate'] = \BulkGate\CartSms\Helpers::fixUrl($this->url->link('cartsms/sign/authenticate', 'token=' . $this->session->data['token'], true));
                     $data['cartsms_customer_iso'] = \BulkGate\CartSms\Helpers::getCountryCode($init->di()->getDatabase(), isset($order_info['payment_country_id']) ? $order_info['payment_country_id'] : -1);
                 }
             }
@@ -48,14 +48,14 @@
             </add>
         </operation>
     </file>
-    <file path="admin/view/template/sale/order_info.twig">
+    <file path="admin/view/template/sale/order_info.tpl">
         <operation>
             <search><![CDATA[
-                <script type="text/javascript"><!--
+                <script type="text/javascript">
 		    ]]>
             </search>
             <add position="before"><![CDATA[
-                {% if cartsms_application_id is defined %}
+                <?php  if (!empty($cartsms_application_id)) { ?>
                 <div class="container-fluid">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -97,7 +97,7 @@
                         </div>
                     </div>
                 </div>
-                {% endif %}
+                <?php } ?>
             ]]>
             </add>
         </operation>
