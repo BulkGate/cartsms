@@ -100,35 +100,7 @@ class HookLoad extends BulkGate\Extensions\Strict implements BulkGate\Extensions
                 $this->address($variables, $order, 'invoice_', 'payment_');
 
                 $this->orderProducts($variables);
-                $this->orderCarrier($variables);
             }
-        }
-    }
-
-    public function orderCarrier(Variables $variables)
-    {
-        $carrier = $this->db->execute($this->db->prepare("
-            SELECT 
-                `{$this->db->table('order_shipment')}`.`date_added`, 
-                `{$this->db->table('order_shipment')}`.`tracking_number`,
-                `{$this->db->table('shipping_courier')}`.`shipping_courier_code`,
-                `{$this->db->table('shipping_courier')}`.`shipping_courier_name`
-            FROM `{$this->db->table('order_shipment')}`
-            LEFT JOIN `{$this->db->table('shipping_courier')}` ON `{$this->db->table('order_shipment')}`.`shipping_courier_id` = `{$this->db->table('shipping_courier')}`.`shipping_courier_id`
-            WHERE `{$this->db->table('order_shipment')}`.`order_id` = %s 
-            ORDER BY `{$this->db->table('order_shipment')}`.`order_shipment_id` DESC
-            LIMIT 1",
-            array(
-                $variables->get('order_id')
-            )
-        ))->getRow();
-
-        if($carrier)
-        {
-            $variables->set('order_carrier_tracking_date', $carrier->date_added);
-            $variables->set('order_carrier_tracking_number', $carrier->tracking_number);
-            $variables->set('order_carrier_name', $carrier->shipping_courier_code);
-            $variables->set('order_carrier_code', $carrier->shipping_courier_name);
         }
     }
 
