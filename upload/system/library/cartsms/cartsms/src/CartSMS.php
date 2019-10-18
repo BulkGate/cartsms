@@ -109,7 +109,7 @@ class CartSMS extends Strict implements IModule
     {
         $actual = array();
 
-        $row = $this->db->execute("SELECT `value` FROM `{$this->db->table('setting')}` WHERE `key` = 'config_name' LIMIT 1")->getRow();
+        $row = $this->db->execute("SELECT `value` FROM `{$this->db->table('setting')}` WHERE `key` = 'config_name' ORDER BY `store_id` ASC LIMIT 1")->getRow();
 
         if($row)
         {
