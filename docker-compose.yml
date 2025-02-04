@@ -1,0 +1,40 @@
+services:
+  opencart:
+    build:
+      dockerfile: Dockerfile
+      args:
+        OC_VERSION: ${OC_VERSION:-latest}
+    image: opencart:${OC_VERSION:-latest}
+    depends_on:
+      - db
+    ports:
+      - "8083:80"
+#    user: www-data
+#    env_file:
+#      - ./.env
+#    environment:
+#      OC_VERSION: 3.1
+    volumes:
+      - ./:/opt/bitnami/opencart/system/library/cartsms/
+      #- ./prestashop:/var/www/html
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: opencart
+      MYSQL_PASSWORD: admin
+      MYSQL_USER: bn_opencart
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - db:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    environment:
+      ADMINER_DESIGN: "nette"
+      ADMINER_DEFAULT_SERVER: "db"
+    ports:
+      - "8090:8080"
+
+volumes:
+  db:
