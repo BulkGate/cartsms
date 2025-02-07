@@ -1,23 +1,32 @@
 <?php
 
-require_once DIR_SYSTEM.'/library/cartsms/Controller.php';
-require_once DIR_APPLICATION . "controller/marketplace/modification.php";
+namespace Opencart\Admin\Controller\Extension\OcCartsms\Module;
 
-/** 
- * @property \Document $document
- * @property \Response $response
- * @property Cart\User $user
- * @property ModelUserUserGroup $model_user_user_group
- * @property \ModelSettingEvent $model_setting_event
- */
-class ControllerExtensionModuleCartsms extends CartSms\Controller
+class Cartsms extends \Opencart\System\Engine\Controller
 {
-    public function index()
+	public function index()
     {
-        $this->response->redirect($this->url->link('cartsms/module_settings/actionDefault', 'user_token=' . $this->session->data['user_token'], true));
+        $this->load->language('extension/oc_cartsms/module/cartsms');
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->response->setOutput($this->load->view('extension/oc_cartsms/module/cartsms', [
+			'header' => $this->load->controller('common/header'),
+			'column_left' => $this->load->controller('common/column_left'),
+			'footer' => $this->load->controller('common/footer'),
+		]));
     }
 
-    public function install()
+	public function install()
+	{
+		//throw new \Exception("install: test error");
+	}
+
+	public function uninstall()
+	{
+		//throw new \Exception("unintall: test error");
+	}
+
+    /*public function install()
     {
         $this->load->model('setting/event');
         $this->load->model('user/user_group');
@@ -112,6 +121,6 @@ class ControllerExtensionModuleCartsms extends CartSms\Controller
     {
         $db = $this->oc_di->getDatabase();
         $db->execute($db->prepare("DELETE FROM `{$db->table('modification')}` WHERE `code` = %s", array(CartSms\Init::MODULE_CODE)));
-    }
+    }*/
 }
 

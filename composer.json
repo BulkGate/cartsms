@@ -1,0 +1,32 @@
+{
+  "name": "bulkgate/cartsms",
+  "type": "opencart-module",
+  "minimum-stability": "RC",
+  "require": {
+    "php": ">= 7.4",
+    "bulkgate/plugin": "dev-master"
+  },
+  "require-dev": {
+    "tracy/tracy": "^2.9",
+    "nette/tester": "^2.4.3",
+    "phpstan/phpstan": "^1.10",
+    "mockery/mockery": "^1.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "BulkGate\\CartSms\\": "src/"
+    },
+    "classmap": [
+      "src/"
+    ]
+  },
+  "scripts": {
+    "tester": "tester -C tests --colors=1",
+    "coverage": "tester -C --coverage=coverage.html --coverage-src=src --stop-on-fail",
+    "phpstan": "_PS_ROOT_DIR_=/var/www/html phpstan analyse -c phpstan.neon --memory-limit=1G",
+    "prestashop-lint": "php-cs-fixer fix"
+  },
+  "config": {
+    "prepend-autoloader": false
+  }
+}

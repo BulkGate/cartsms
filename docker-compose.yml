@@ -15,15 +15,16 @@ services:
 #    environment:
 #      OC_VERSION: 3.1
     volumes:
-      - ./:/opt/bitnami/opencart/system/library/cartsms/
-      #- ./prestashop:/var/www/html
+      - ./admin:/var/www/html/extension/oc_cartsms/admin
+      - ./src:/var/www/html/extension/oc_cartsms/src
+      - ./tests:/var/www/html/extension/oc_cartsms/tests
+      - ./vendor:/var/www/html/extension/oc_cartsms/vendor
+      - ./install.json:/var/www/html/extension/oc_cartsms/install.json
 
   db:
     image: mysql:5.7
     environment:
       MYSQL_DATABASE: opencart
-      MYSQL_PASSWORD: admin
-      MYSQL_USER: bn_opencart
       MYSQL_ROOT_PASSWORD: admin
     volumes:
       - db:/var/lib/mysql
