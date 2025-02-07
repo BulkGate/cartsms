@@ -1,0 +1,56 @@
+<?php
+
+namespace BulkGate\CartSms\Eshop;
+
+/**
+ * @author Lukáš Piják 2023 TOPefekt s.r.o.
+ * @link https://www.bulkgate.com/
+ */
+
+use BulkGate\Plugin\Strict;
+use BulkGate\Plugin\Eshop\Configuration as EshopConfiguration;
+
+class Configuration implements EshopConfiguration
+{
+	use Strict;
+
+	private string $version_number;
+
+	private string $site_url;
+
+	private string $site_name;
+
+	/**
+	 * @param array<string, string> $plugin_data
+	 */
+	public function __construct(string $version_number, string $site_url, string $site_name)
+	{
+		$this->version_number = $version_number;
+		$this->site_url = $site_url;
+		$this->site_name = $site_name;
+	}
+
+
+	public function url(): string
+	{
+		return $this->site_url;
+	}
+
+
+	public function product(): string
+	{
+		return 'oc';
+	}
+
+
+	public function version(): string
+	{
+		return $this->version_number;
+	}
+
+
+	public function name(): string
+	{
+		return $this->site_name;
+	}
+}

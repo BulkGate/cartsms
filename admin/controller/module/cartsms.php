@@ -2,11 +2,20 @@
 
 namespace Opencart\Admin\Controller\Extension\OcCartsms\Module;
 
-class Cartsms extends \Opencart\System\Engine\Controller
+use BulkGate\CartSms\Eshop\Language;
+use BulkGate\CartSms\Eshop\MultiStore;
+use BulkGate\CartSms\Eshop\OrderStatus;
+use BulkGate\CartSms\Eshop\ReturnStatus;
+use BulkGate\Plugin\Eshop\Configuration;
+use BulkGate\Plugin\Settings\Settings;
+
+require_once DIR_EXTENSION . 'oc_cartsms/vendor/autoload.php';
+
+class Cartsms extends \BulkGate\CartSms\Controller
 {
 	public function index()
     {
-        $this->load->language('extension/oc_cartsms/module/cartsms');
+		$this->load->language('extension/oc_cartsms/module/cartsms');
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->response->setOutput($this->load->view('extension/oc_cartsms/module/cartsms', [
@@ -14,15 +23,24 @@ class Cartsms extends \Opencart\System\Engine\Controller
 			'column_left' => $this->load->controller('common/column_left'),
 			'footer' => $this->load->controller('common/footer'),
 		]));
+
+		bdump($this->di_container->getByClass(Configuration::class)->url());
+		bdump($this->di_container->getByClass(OrderStatus::class)->load());
+		bdump($this->di_container->getByClass(ReturnStatus::class)->load());
+		bdump($this->di_container->getByClass(Language::class)->load());
+		bdump($this->di_container->getByClass(Language::class)->get());
+		bdump($this->di_container->getByClass(MultiStore::class)->load());
     }
 
 	public function install()
 	{
+		$this->di_container->getByClass(Settings::class)->install();
 		//throw new \Exception("install: test error");
 	}
 
 	public function uninstall()
 	{
+		$this->di_container->getByClass(Settings::class)->uninstall();
 		//throw new \Exception("unintall: test error");
 	}
 
