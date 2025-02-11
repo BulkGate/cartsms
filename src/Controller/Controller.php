@@ -24,7 +24,7 @@ class Controller extends \Opencart\System\Engine\Controller
 			'api_version' => '1.0',
 			'module_version' => '4.0',
 			'name' => $this->model_setting_setting->getValue('config_name'),
-			'url' => HTTP_SERVER,
+			'url' => HTTP_CATALOG,
 			'gate_url' => 'http://192.168.16.1',
 			'default_settings' => [
 				"main:dispatcher" => 'asset',

@@ -71,8 +71,25 @@ class Cartsms extends \BulkGate\CartSms\Controller
 
 	public function debug()
 	{
-		bdump($this->di_container->getByClass(Plugin\Settings\Settings::class)->load('static:application_id'));
-		bdump($this->di_container->getByClass(Plugin\Database\Connection::class)->getSqlList());
+		$requirements = $this->di_container->getByClass(Plugin\Debug\Requirements::class);
+		$logger = $this->di_container->getByClass(Plugin\Debug\Logger::class);
+		$url = $this->di_container->getByClass(Plugin\IO\Url::class);
+
+		$requirements = $requirements->run([
+			$requirements->same('{"message":"BulkGate API"}', file_get_contents($url->get('api/welcome')), 'Api Connection'),
+			$requirements->same(true, version_compare(VERSION, '4.0.0', '>='), 'Opencart ver. >= 4.0.0'),
+		]);
+
+		$this->response->setOutput($this->load->view('extension/oc_cartsms/module/debug', [
+			'header' => $this->load->controller('common/header'),
+			'column_left' => $this->load->controller('common/column_left'),
+			'footer' => $this->load->controller('common/footer'),
+			'requirements' => $requirements,
+			'errors' => array_reverse($logger->getList()),
+			'opencart_version' => VERSION,
+			'php_version' => phpversion(),
+			'url' => $url->get(),
+		]));
 	}
 
     /*public function install()
