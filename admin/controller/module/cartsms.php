@@ -2,12 +2,8 @@
 
 namespace Opencart\Admin\Controller\Extension\OcCartsms\Module;
 
-use BulkGate\CartSms\Eshop\Language;
-use BulkGate\CartSms\Eshop\MultiStore;
-use BulkGate\CartSms\Eshop\OrderStatus;
-use BulkGate\CartSms\Eshop\ReturnStatus;
-use BulkGate\Plugin\Eshop\Configuration;
-use BulkGate\Plugin\Settings\Settings;
+use BulkGate\CartSms\Ajax;
+use BulkGate\Plugin;
 
 require_once DIR_EXTENSION . 'oc_cartsms/vendor/autoload.php';
 
@@ -15,6 +11,10 @@ class Cartsms extends \BulkGate\CartSms\Controller
 {
 	public function index()
     {
+		$this->di_container->getByClass(Plugin\Eshop\EshopSynchronizer::class)->run();
+
+		$jwt = $this->di_container->getByClass(Plugin\User\Sign::class)->authenticate(false, ['expire' => time() + 300]);
+
 		$this->load->language('extension/oc_cartsms/module/cartsms');
 		$this->document->setTitle($this->language->get('heading_title'));
 
@@ -22,26 +22,57 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'header' => $this->load->controller('common/header'),
 			'column_left' => $this->load->controller('common/column_left'),
 			'footer' => $this->load->controller('common/footer'),
-		]));
+			'synchronizer' => $this->di_container->getByClass(Plugin\Settings\Synchronizer::class),
+			'settings' => $this->di_container->getByClass(Plugin\Settings\Settings::class),
+			'url' => $this->di_container->getByClass(Plugin\IO\Url::class),
+			'path' => new class($this->url, $this->session->data['user_token']) {
+				public function __construct(private $url, private $token)
+				{
+				}
 
-		bdump($this->di_container->getByClass(Configuration::class)->url());
-		bdump($this->di_container->getByClass(OrderStatus::class)->load());
-		bdump($this->di_container->getByClass(ReturnStatus::class)->load());
-		bdump($this->di_container->getByClass(Language::class)->load());
-		bdump($this->di_container->getByClass(Language::class)->get());
-		bdump($this->di_container->getByClass(MultiStore::class)->load());
+				public function get(string $route, array $args = [])
+				{
+					return $this->url->link($route, [...['user_token' => $this->token], ...$args], true);
+				}
+			},
+			'token' => $jwt,
+		]));
     }
 
 	public function install()
 	{
-		$this->di_container->getByClass(Settings::class)->install();
+		$this->di_container->getByClass(Plugin\Settings\Settings::class)->install();
 		//throw new \Exception("install: test error");
 	}
 
 	public function uninstall()
 	{
-		$this->di_container->getByClass(Settings::class)->uninstall();
+		$this->di_container->getByClass(Plugin\Settings\Settings::class)->uninstall();
 		//throw new \Exception("unintall: test error");
+	}
+
+	public function proxy()
+	{
+		$this->response->addHeader('Content-Type: application/json');
+
+		switch ($this->request->get('action')) {
+			case "login":
+				['email' => $email, 'password' => $password] = $this->request->post;
+
+				return $this->response->setOutput(json_encode($this->di_container->getByClass(Plugin\User\Sign::class)->in($email, $password, '/dashboard')));
+			case "logout":
+				return $this->response->setOutput(json_encode($this->di_container->getByClass(Plugin\User\Sign::class)->out('/sign/in')));
+			case "authenticate":
+				return $this->response->setOutput(json_encode($this->di_container->getByClass(Ajax\Authenticate::class)->run('/sign/in')));
+			case "module-settings":
+				return $this->response->setOutput(json_encode($this->di_container->getByClass(Ajax\PluginSettings::class)->run($this->request->post, fn(string $lang) => $this->url->link('extension/oc_cartsms/module/cartsms', ['user_token' => $this->session->data['user_token'], 'reload' => $lang], true) . '#/dashboard')));
+		}
+	}
+
+	public function debug()
+	{
+		bdump($this->di_container->getByClass(Plugin\Settings\Settings::class)->load('static:application_id'));
+		bdump($this->di_container->getByClass(Plugin\Database\Connection::class)->getSqlList());
 	}
 
     /*public function install()

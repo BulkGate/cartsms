@@ -38,7 +38,7 @@ class Connection implements Database\Connection
 
 		$result = (array) $this->db->query($sql);
 
-		foreach ($result as $key => $item) {
+		foreach ($result['rows'] ?? [] as $key => $item) {
 			$output[$key] = (array) $item;
 		}
 

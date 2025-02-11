@@ -29,7 +29,7 @@ class ConnectionWordpressTest extends TestCase
 	{
 		$connection = new Connection($db = Mockery::mock(DB::class));
 		$db->shouldReceive('query')->with('SQL')->once()->andReturn([
-			['id' => 4], ['id' => 5]
+			'rows' => [['id' => 4], ['id' => 5]]
 		]);
 
 		[$e1, $e2] = $connection->execute('SQL')->toArray();

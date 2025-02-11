@@ -3,6 +3,7 @@
 namespace BulkGate\CartSms\DI;
 
 use BulkGate\Plugin;
+use BulkGate\CartSms\Ajax;
 use BulkGate\CartSms\Eshop;
 use BulkGate\CartSms\Event;
 use BulkGate\CartSms\Database;
@@ -39,12 +40,16 @@ class Factory implements Plugin\DI\Factory
 		// Debug
 		$container['debug.repository.logger'] = ['factory' => Plugin\Debug\Repository\LoggerSettings::class, 'factory_method' => function () use ($container, $parameters): Plugin\Debug\Repository\LoggerSettings
 		{
-			$service = new Plugin\Debug\Repository\LoggerSettings($container->getByClass(Plugin\Settings\Settings::class));
+			$service = new Plugin\Debug\Repository\LoggerSettings($container->getService('settings.settings'));
 			$service->setup(is_int($parameters['logger_limit'] ?? null) ? $parameters['logger_limit'] : 100);
 			return $service;
 		}];
 		$container['debug.logger'] = Plugin\Debug\Logger::class;
 		$container['debug.requirements'] = Plugin\Debug\Requirements::class;
+
+		// Ajax
+		$container['ajax.authenticate'] = Ajax\Authenticate::class;
+		$container['ajax.plugin_settings'] = Ajax\PluginSettings::class;
 
 		// Eshop
 		$container['eshop.configuration'] = ['factory' => Eshop\Configuration::class, 'factory_method' => fn () => new Eshop\Configuration($parameters['module_version'], $parameters['url'], $parameters['name'] ?? 'Store')];
@@ -84,9 +89,9 @@ class Factory implements Plugin\DI\Factory
 			/**
 			 * @var Eshop\Configuration $configuration
 			 */
-			$configuration = $container->getByClass(Eshop\Configuration::class);
+			$configuration = $container->getService('eshop.configuration');
 
-			return new Plugin\IO\ConnectionFactory($configuration->url(), $configuration->product(), $container->getByClass(Plugin\Settings\Settings::class));
+			return new Plugin\IO\ConnectionFactory($configuration->url(), $configuration->product(), $container->getService('settings.settings'));
 		}];
 		$container['io.connection'] = ['factory' => Plugin\IO\Connection::class, 'factory_method' => fn () => $container->getByClass(Plugin\IO\ConnectionFactory::class)->create()];
 		$container['io.url'] = ['factory' => Plugin\IO\Url::class, 'parameters' => ['url' => $parameters['gate_url'] ?? 'https://portal.bulkgate.com']];
@@ -98,7 +103,13 @@ class Factory implements Plugin\DI\Factory
 
 		// Settings
 		$container['settings.repository.database'] = Plugin\Settings\Repository\SettingsDatabase::class;
-		$container['settings.settings'] = Plugin\Settings\Settings::class;
+		$container['settings.settings'] = ['factory' => Plugin\Settings\Settings::class, 'factory_method' => function () use ($container, $parameters): Plugin\Settings\Settings
+		{
+			$settings = new Plugin\Settings\Settings($container->getByClass(Plugin\Settings\Repository\SettingsDatabase::class));
+			$settings->setDefaultSettings($parameters['default_settings']);
+
+			return $settings;
+		}];
 		$container['settings.repository.synchronizer'] = Plugin\Settings\Repository\SynchronizationDatabase::class;
 		$container['settings.synchronizer'] = Plugin\Settings\Synchronizer::class;
 

@@ -14,10 +14,7 @@ class MultiStore implements Plugin\Eshop\MultiStore
 {
 	use Strict;
 
-	public function __construct(
-		private readonly Configuration $configuration,
-		private readonly \Opencart\Admin\Model\Setting\Store | \Opencart\System\Engine\Proxy $store
-	)
+	public function __construct(private readonly Configuration $configuration, private readonly \Opencart\Admin\Model\Setting\Store | \Opencart\System\Engine\Proxy $store)
 	{
 	}
 
