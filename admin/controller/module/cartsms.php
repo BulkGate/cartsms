@@ -57,8 +57,26 @@ class Cartsms extends \BulkGate\CartSms\Controller
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_add_order_history',
 			'description' => '',
-			'trigger'     => 'catalog/model/checkout/order.addHistory/before',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddOrderHistory',
+			'trigger'     => 'catalog/model/checkout/order.addHistory/after',
+			'action'      => 'extension/oc_cartsms/event/cartsms.hookProductOutOfStock',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_change_order_status',
+			'description' => '',
+			'trigger'     => 'catalog/model/checkout/order.editOrderStatusId/before',
+			'action'      => 'extension/oc_cartsms/event/cartsms.loadOrder',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_change_order_status',
+			'description' => '',
+			'trigger'     => 'catalog/model/checkout/order.editOrderStatusId/after',
+			'action'      => 'extension/oc_cartsms/event/cartsms.hookChangeOrderStatus',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -72,8 +90,6 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'sort_order'  => '1'
 		]);
 
-		// todo: eventy by mozna mohly byt umisteny v library. Diky tomu pak nemusim rozdelovat na admin a catalog viz
-		// todo: Aktualne je hodnota action stejna, ale hleda se v jinych adresarich kvuli kontextu.
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_add_customer',
 			'description' => '',
@@ -92,8 +108,8 @@ class Cartsms extends \BulkGate\CartSms\Controller
 
 		$this->model_setting_event->deleteEventByCode('cartsms_add_order');
 		$this->model_setting_event->deleteEventByCode('cartsms_add_order_history');
+		$this->model_setting_event->deleteEventByCode('cartsms_change_order_status');
 		$this->model_setting_event->deleteEventByCode('cartsms_add_customer');
-		$this->model_setting_event->deleteEventByCode('cartsms_add_customer_xxx');
 	}
 
 	public function proxy()
