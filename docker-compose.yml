@@ -16,6 +16,7 @@ services:
 #      OC_VERSION: 3.1
     volumes:
       - ./admin:/var/www/html/extension/oc_cartsms/admin
+      - ./catalog:/var/www/html/extension/oc_cartsms/catalog
       - ./src:/var/www/html/extension/oc_cartsms/src
       - ./tests:/var/www/html/extension/oc_cartsms/tests
       - ./vendor:/var/www/html/extension/oc_cartsms/vendor

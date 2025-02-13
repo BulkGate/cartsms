@@ -42,13 +42,58 @@ class Cartsms extends \BulkGate\CartSms\Controller
 	public function install()
 	{
 		$this->di_container->getByClass(Plugin\Settings\Settings::class)->install();
-		//throw new \Exception("install: test error");
+
+		$this->load->model('setting/event');
+
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_add_order',
+			'description' => '',
+			'trigger'     => 'catalog/model/checkout/order.addOrder/after',
+			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddOrder',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_add_order_history',
+			'description' => '',
+			'trigger'     => 'catalog/model/checkout/order.addHistory/before',
+			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddOrderHistory',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_add_customer',
+			'description' => '',
+			'trigger'     => 'catalog/model/account/customer.addCustomer/after',
+			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddCustomer',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
+		// todo: eventy by mozna mohly byt umisteny v library. Diky tomu pak nemusim rozdelovat na admin a catalog viz
+		// todo: Aktualne je hodnota action stejna, ale hleda se v jinych adresarich kvuli kontextu.
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_add_customer',
+			'description' => '',
+			'trigger'     => 'admin/model/customer/customer.addCustomer/after',
+			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddCustomer',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
 	}
 
 	public function uninstall()
 	{
 		$this->di_container->getByClass(Plugin\Settings\Settings::class)->uninstall();
-		//throw new \Exception("unintall: test error");
+
+		$this->load->model('setting/event');
+
+		$this->model_setting_event->deleteEventByCode('cartsms_add_order');
+		$this->model_setting_event->deleteEventByCode('cartsms_add_order_history');
+		$this->model_setting_event->deleteEventByCode('cartsms_add_customer');
+		$this->model_setting_event->deleteEventByCode('cartsms_add_customer_xxx');
 	}
 
 	public function proxy()

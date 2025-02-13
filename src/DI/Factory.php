@@ -19,11 +19,6 @@ class Factory implements Plugin\DI\Factory
 		['registry' => $registry] = $parameters;
 		$iso = $registry->language->get('code');
 
-		$registry->load->model('localisation/order_status');
-		$registry->load->model('localisation/return_status');
-		$registry->load->model('localisation/language');
-		$registry->load->model('setting/store');
-
 		$container = new Plugin\DI\Container($parameters['mode'] ?? 'strict');
 
 		if (($parameters['debug'] ?? false) && class_exists(Debugger::class))
@@ -54,10 +49,30 @@ class Factory implements Plugin\DI\Factory
 		// Eshop
 		$container['eshop.configuration'] = ['factory' => Eshop\Configuration::class, 'factory_method' => fn () => new Eshop\Configuration($parameters['module_version'], $parameters['url'], $parameters['name'] ?? 'Store')];
 		$container['eshop.synchronizer'] = Plugin\Eshop\EshopSynchronizer::class;
-		$container['eshop.order_status'] = ['factory' => Eshop\OrderStatus::class, 'factory_method' => fn () => new Eshop\OrderStatus($registry->model_localisation_order_status)];
-		$container['eshop.return_status'] = ['factory' => Eshop\ReturnStatus::class, 'factory_method' => fn () => new Eshop\ReturnStatus($registry->model_localisation_return_status)];
-		$container['eshop.language'] = ['factory' => Eshop\Language::class, 'factory_method' => fn () => new Eshop\Language($registry->model_localisation_language)];
-		$container['eshop.multistore'] = ['factory' => Eshop\MultiStore::class, 'factory_method' => fn () => new Eshop\MultiStore($container->getService('eshop.configuration'), $registry->model_setting_store)];
+		$container['eshop.order_status'] = ['factory' => Eshop\OrderStatus::class, 'factory_method' => function() use ($registry)
+		{
+			$registry->load->model('localisation/order_status');
+
+			return new Eshop\OrderStatus($registry->model_localisation_order_status);
+		}];
+		$container['eshop.return_status'] = ['factory' => Eshop\ReturnStatus::class, 'factory_method' => function() use ($registry)
+		{
+			$registry->load->model('localisation/return_status');
+
+			return new Eshop\ReturnStatus($registry->model_localisation_return_status);
+		}];
+		$container['eshop.language'] = ['factory' => Eshop\Language::class, 'factory_method' => function() use ($registry)
+		{
+			$registry->load->model('localisation/language');
+
+			return new Eshop\Language($registry->model_localisation_language);
+		}];
+		$container['eshop.multistore'] = ['factory' => Eshop\MultiStore::class, 'factory_method' => function() use ($registry, $container)
+		{
+			$registry->load->model('setting/store');
+
+			return new Eshop\MultiStore($container->getService('eshop.configuration'), $registry->model_setting_store);
+		}];
 
 		// Event loaders
 		$container['event.loader.extension'] = ['factory' => Event\Loader\Extension::class, 'auto_wiring' => false];
