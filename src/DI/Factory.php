@@ -75,7 +75,7 @@ class Factory implements Plugin\DI\Factory
 		}];
 
 		// Event loaders
-		$container['event.loader.extension'] = ['factory' => Event\Loader\Extension::class, 'auto_wiring' => false];
+		$container['event.loader.extension'] = ['factory' => Event\Loader\Extension::class, 'factory_method' => fn () => new Event\Loader\Extension($registry->event), 'auto_wiring' => false];
 		$container['event.loader.shop'] = ['factory' => Event\Loader\Shop::class, 'auto_wiring' => false];
 		$container['event.loader.order'] = ['factory' => Event\Loader\Order::class, 'auto_wiring' => false];
 		$container['event.loader.order_status'] = ['factory' => Event\Loader\OrderStatus::class, 'auto_wiring' => false];

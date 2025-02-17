@@ -18,7 +18,7 @@ class Controller extends \Opencart\System\Engine\Controller
 		Factory::setup(fn () => [
 			'registry' => $this->registry,
 			'db' => $this->db,
-			'debug' => false,
+			'debug' => true,
 			'dispatcher' => Plugin\Event\Dispatcher::Asset,
 			'api_version' => '1.0',
 			'module_version' => '4.0',
@@ -44,6 +44,18 @@ class Controller extends \Opencart\System\Engine\Controller
 
 	protected function runHook(string $category, string $endpoint, Plugin\Event\Variables $variables, array $parameters = [], ?callable $success_callback = null): void
 	{
+		$hook = join('.', [$category, $endpoint]);
+		$run = true;
+
+		// we give chance to stop hook
+		$this->event->trigger('cartsms.hook.run', [$hook, $variables->toArray(), &$run]);
+
+		if ($run === false)
+		{
+			$this->di_container->getByClass(Plugin\Debug\Logger::class)->log("Hook event filter: 'cartsms.hook.run' stop execution of hook '$hook'", 'warning');
+			return;
+		}
+
 		$dispatcher = $this->di_container->getByClass(Plugin\Event\Dispatcher::class);
 
 		$dispatcher->dispatch($category, $endpoint, $variables, $parameters, $success_callback);
