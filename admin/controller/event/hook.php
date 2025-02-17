@@ -6,7 +6,7 @@ use BulkGate\Plugin;
 
 require_once DIR_EXTENSION . 'oc_cartsms/vendor/autoload.php';
 
-class Cartsms extends \BulkGate\CartSms\Controller
+class Hook extends \BulkGate\CartSms\Controller
 {
 	private array|null $product = null;
 

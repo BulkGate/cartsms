@@ -50,7 +50,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_add_return',
 			'description' => '',
 			'trigger'     => 'catalog/model/account/returns.addReturn/after',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddReturn',
+			'action'      => 'extension/oc_cartsms/event/hook.hookAddReturn',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -59,7 +59,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_change_return_status',
 			'description' => '',
 			'trigger'     => 'admin/model/sale/returns.addHistory/before',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookChangeReturnStatus',
+			'action'      => 'extension/oc_cartsms/event/hook.hookChangeReturnStatus',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -68,7 +68,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_add_order',
 			'description' => '',
 			'trigger'     => 'catalog/model/checkout/order.addOrder/after',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddOrder',
+			'action'      => 'extension/oc_cartsms/event/hook.hookAddOrder',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -77,7 +77,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_add_order_history',
 			'description' => '',
 			'trigger'     => 'catalog/model/checkout/order.addHistory/before',
-			'action'      => 'extension/oc_cartsms/event/cartsms.loadOrderProducts',
+			'action'      => 'extension/oc_cartsms/event/hook.loadOrderProducts',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -85,7 +85,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_add_order_history',
 			'description' => '',
 			'trigger'     => 'catalog/model/checkout/order.addHistory/after',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookProductOutOfStock',
+			'action'      => 'extension/oc_cartsms/event/hook.hookProductOutOfStock',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -94,7 +94,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_edit_product',
 			'description' => '',
 			'trigger'     => 'admin/model/catalog/product.editProduct/before',
-			'action'      => 'extension/oc_cartsms/event/cartsms.loadProduct',
+			'action'      => 'extension/oc_cartsms/event/hook.loadProduct',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -103,7 +103,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_edit_product',
 			'description' => '',
 			'trigger'     => 'admin/model/catalog/product.editProduct/after',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookProductOutOfStock',
+			'action'      => 'extension/oc_cartsms/event/hook.hookProductOutOfStock',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -112,7 +112,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_change_order_status',
 			'description' => '',
 			'trigger'     => 'catalog/model/checkout/order.editOrderStatusId/before',
-			'action'      => 'extension/oc_cartsms/event/cartsms.loadOrder',
+			'action'      => 'extension/oc_cartsms/event/hook.loadOrder',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -121,7 +121,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_change_order_status',
 			'description' => '',
 			'trigger'     => 'catalog/model/checkout/order.editOrderStatusId/after',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookChangeOrderStatus',
+			'action'      => 'extension/oc_cartsms/event/hook.hookChangeOrderStatus',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -130,7 +130,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_add_customer',
 			'description' => '',
 			'trigger'     => 'catalog/model/account/customer.addCustomer/after',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddCustomer',
+			'action'      => 'extension/oc_cartsms/event/hook.hookAddCustomer',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -139,7 +139,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_add_customer',
 			'description' => '',
 			'trigger'     => 'admin/model/customer/customer.addCustomer/after',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookAddCustomer',
+			'action'      => 'extension/oc_cartsms/event/hook.hookAddCustomer',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -148,7 +148,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_contact_form',
 			'description' => '',
 			'trigger'     => 'catalog/controller/information/contact.send/after',
-			'action'      => 'extension/oc_cartsms/event/cartsms.hookContactForm',
+			'action'      => 'extension/oc_cartsms/event/hook.hookContactForm',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -199,6 +199,13 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			$requirements->same(true, version_compare(VERSION, '4.0.0', '>='), 'Opencart ver. >= 4.0.0'),
 		]);
 
+		/*$this->event->register('cartsms.hook.extension', new \Opencart\System\Engine\Action('extension/oc_cartsms/module/cartsms.hookExtension'));
+
+		$this->runHook('customerx', 'newx', new Plugin\Event\Variables([
+			'customer_id' => 100,
+			'data' => [],
+		]));*/
+
 		$this->response->setOutput($this->load->view('extension/oc_cartsms/module/debug', [
 			'header' => $this->load->controller('common/header'),
 			'column_left' => $this->load->controller('common/column_left'),
@@ -210,6 +217,13 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'url' => $url->get(),
 		]));
 	}
+
+	/*public function hookExtension(Plugin\Event\Variables $variables, array $parameters)
+	{
+		$variables['xxx'] = 'test';
+
+		bdump($variables, "HOOK_EXTENSION");
+	}*/
 
     /*public function install()
     {
