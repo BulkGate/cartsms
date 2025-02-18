@@ -2,14 +2,27 @@
 
 namespace BulkGate\CartSms\Event\Loader;
 
-use BulkGate\Plugin\Event\DataLoader;
-use BulkGate\Plugin\Event\Variables;
+use BulkGate\Plugin;
 
-class Shop implements DataLoader
+class Shop implements Plugin\Event\DataLoader
 {
 
-	public function load(Variables $variables, array $parameters = []): void
+	public function __construct(private $settings)
 	{
+	}
 
+	public function load(Plugin\Event\Variables $variables, array $parameters = []): void
+	{
+		if (!isset($variables['shop_id'])) {
+			return;
+		}
+
+		$settings = $this->settings->getSetting('config', $variables['shop_id']);
+
+		$variables['shop_email'] = $settings['config_email'];
+		$variables['shop_name'] = $settings['config_name'];
+		$variables['shop_domain'] = $settings['config_url'] ?? HTTP_CATALOG; //todo: shop 0 tuto polozku nema ... tady musime vzit aktualni url?
+		$variables['shop_currency'] = $settings['config_currency'];
+		$variables['shop_phone'] = $settings['config_telephone'];
 	}
 }
