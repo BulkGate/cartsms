@@ -2,14 +2,22 @@
 
 namespace BulkGate\CartSms\Event\Loader;
 
-use BulkGate\Plugin\Event\DataLoader;
-use BulkGate\Plugin\Event\Variables;
+use BulkGate\Plugin;
 
-class OrderStatus implements DataLoader
+class OrderStatus implements Plugin\Event\DataLoader
 {
-
-	public function load(Variables $variables, array $parameters = []): void
+	public function __construct(private $order_status)
 	{
+	}
 
+	public function load(Plugin\Event\Variables $variables, array $parameters = []): void
+	{
+		if (!isset($variables['order_status_id'])) {
+			return;
+		}
+
+		$status = $this->order_status->getOrderStatus((int) $variables['order_status_id']);
+
+		$variables['order_status'] = $status['name'];
 	}
 }
