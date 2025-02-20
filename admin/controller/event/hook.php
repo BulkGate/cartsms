@@ -10,6 +10,32 @@ class Hook extends \BulkGate\CartSms\Controller
 {
 	private array|null $product = null;
 
+	public function hookSendSms(array $params)
+	{
+		$number = $params['number'] ?? null;
+		$template = $params['template'] ?? null;
+		$variables = $params['variables'] ?? [];
+		$settings = $params['settings'] ?? [];
+
+		$hook = $this->di_container->getByClass(Plugin\Event\Hook::class);
+
+		$hook->send('/api/2.0/advanced/transactional', [
+			'number' => $number,
+			'application_product' => 'oc',
+			'tag' => 'module_custom',
+			'variables' => $variables,
+			'country' => $settings['country'] ?? null,
+			'channel' => [
+				'sms' => [
+					'sender_id' => $settings['senderType'] ?? 'gSystem',
+					'sender_id_value' => $settings['senderValue'] ?? '',
+					'unicode' => $settings['unicode'] ?? false,
+					'text' => $template,
+				],
+			],
+		]);
+	}
+	
 	public function hookAddCustomer(string $route, array $params, int $id_customer)
 	{
 		$this->runHook('customer', 'new', new Plugin\Event\Variables([
