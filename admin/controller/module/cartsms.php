@@ -45,6 +45,25 @@ class Cartsms extends \BulkGate\CartSms\Controller
 
 		$this->load->model('setting/event');
 
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_menu',
+			'description' => '',
+			'trigger'     => 'admin/view/common/column_left/before',
+			'action'      => 'extension/oc_cartsms/event/hook.hookMenu',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
+		//todo: tady musi byt system, aby to fungovalo z DB pro obe strany aplikace (admin/catalog)
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_send_sms',
+			'description' => '',
+			'trigger'     => 'system/cartsms.send_sms',
+			'action'      => 'extension/oc_cartsms/event/hook.hookSendSms',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
 		// z back office nelze vytvorit return, protoze to hlasi chybu product_id ... z nejakeho duvodu je to 0
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_add_return',
@@ -160,6 +179,8 @@ class Cartsms extends \BulkGate\CartSms\Controller
 
 		$this->load->model('setting/event');
 
+		$this->model_setting_event->deleteEventByCode('cartsms_menu');
+		$this->model_setting_event->deleteEventByCode('cartsms_send_sms');
 		$this->model_setting_event->deleteEventByCode('cartsms_add_order');
 		$this->model_setting_event->deleteEventByCode('cartsms_add_return');
 		$this->model_setting_event->deleteEventByCode('cartsms_change_return_status');

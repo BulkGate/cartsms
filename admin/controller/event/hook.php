@@ -10,6 +10,17 @@ class Hook extends \BulkGate\CartSms\Controller
 {
 	private array|null $product = null;
 
+	public function hookMenu(string $route, array &$data)
+	{
+		$data['menus'][] = [
+			'id' => 'menu-cartsms',
+			'icon' => 'fas fa-envelope',
+			'name' => 'BulkGate SMS',
+			'href' => $this->url->link('extension/oc_cartsms/module/cartsms', 'user_token=' . $this->session->data['user_token']),
+			'children' => []
+		];
+	}
+
 	public function hookSendSms(array $params)
 	{
 		$number = $params['number'] ?? null;
@@ -35,7 +46,7 @@ class Hook extends \BulkGate\CartSms\Controller
 			],
 		]);
 	}
-	
+
 	public function hookAddCustomer(string $route, array $params, int $id_customer)
 	{
 		$this->runHook('customer', 'new', new Plugin\Event\Variables([
