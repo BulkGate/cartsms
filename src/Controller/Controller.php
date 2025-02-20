@@ -47,6 +47,11 @@ class Controller extends \Opencart\System\Engine\Controller
 		$hook = join('.', [$category, $endpoint]);
 		$run = true;
 
+		// automatically get admin
+		if ($this->user->isLogged()) {
+			$variables['employee_id'] = $this->user->getId();
+		}
+
 		// we give chance to stop hook
 		$this->event->trigger('cartsms.hook.run', [$hook, $variables->toArray(), &$run]);
 
