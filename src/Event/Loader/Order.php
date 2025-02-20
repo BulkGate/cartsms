@@ -6,7 +6,7 @@ use BulkGate\Plugin;
 
 class Order implements Plugin\Event\DataLoader
 {
-	public function __construct(private $order, private Plugin\Localization\Formatter $formatter)
+	public function __construct(private $order_model, private Plugin\Localization\Formatter $formatter)
 	{
 	}
 
@@ -16,7 +16,7 @@ class Order implements Plugin\Event\DataLoader
 			return;
 		}
 
-		$order = $this->order->getOrder($variables['order_id']);
+		$order = $this->order_model->getOrder($variables['order_id']);
 
 		$variables['id_address_delivery'] = $order['shipping_address_id'];
 		$variables['id_address_invoice'] = $order['payment_address_id'];

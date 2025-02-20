@@ -75,25 +75,66 @@ class Factory implements Plugin\DI\Factory
 		}];
 
 		// Event loaders
-		$container['event.loader.extension'] = ['factory' => Event\Loader\Extension::class, 'factory_method' => fn () => new Event\Loader\Extension($registry->event), 'auto_wiring' => false];
-		$container['event.loader.shop'] = ['factory' => Event\Loader\Shop::class, 'auto_wiring' => false];
-		$container['event.loader.order'] = ['factory' => Event\Loader\Order::class, 'auto_wiring' => false];
-		$container['event.loader.order_status'] = ['factory' => Event\Loader\OrderStatus::class, 'auto_wiring' => false];
-		$container['event.loader.customer'] = ['factory' => Event\Loader\Customer::class, 'auto_wiring' => false];
-		$container['event.loader.product'] = ['factory' => Event\Loader\Product::class, 'auto_wiring' => false];
-		$container['event.loader.post'] = ['factory' => Event\Loader\Post::class, 'auto_wiring' => false];
+		$container['event.loader.extension'] = ['factory' => Event\Loader\Extension::class, 'auto_wiring' => false, 'parameters' => ['event' => $registry->event]/*, 'factory_method' => fn () => new Event\Loader\Extension($registry->event)*/];
+		$container['event.loader.shop'] = ['factory' => Event\Loader\Shop::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
+		{
+			$registry->load->model('setting/setting');
+			$registry->load->model('localisation/language');
+
+			return new Event\Loader\Shop($registry->model_setting_setting, $registry->model_localisation_language);
+		}];
+		$container['event.loader.order'] = ['factory' => Event\Loader\Order::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry, $container)
+		{
+			// todo: vymyslet jak resit admin/catalog [sale/order | checkout/order] -> muzu mit nejakou interni logiku, ktera bude fungovat jako adapter...
+			$registry->load->model('sale/order');
+
+			return new Event\Loader\Order($registry->model_sale_order, $container->getService('localization.formatter'));
+		}];
+		$container['event.loader.order_return'] = ['factory' => Event\Loader\OrderReturn::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry, $container)
+		{
+			// todo: vymyslet jak resit admin/catalog [sale/returns | account/returns] -> muzu mit nejakou interni logiku, ktera bude fungovat jako adapter...
+			$registry->load->model('sale/returns');
+
+			return new Event\Loader\OrderReturn($registry->model_sale_returns, $container->getService('localization.formatter'));
+		}];
+		$container['event.loader.order_status'] = ['factory' => Event\Loader\OrderStatus::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
+		{
+			$registry->load->model('localisation/order_status');
+
+			return new Event\Loader\OrderStatus($registry->model_localisation_order_status);
+		}];
+		$container['event.loader.customer'] = ['factory' => Event\Loader\Customer::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
+		{
+			$registry->load->model('customer/customer');
+
+			return new Event\Loader\Customer($registry->model_customer_customer);
+		}];
+		$container['event.loader.admin'] = ['factory' => Event\Loader\Admin::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
+		{
+			$registry->load->model('user/user');
+
+			return new Event\Loader\Admin($registry->model_user_user);
+		}];
+		$container['event.loader.product'] = ['factory' => Event\Loader\Product::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry, $container)
+		{
+			$registry->load->model('catalog/product');
+			$registry->load->model('catalog/manufacturer');
+
+			return new Event\Loader\Product($registry->model_catalog_product, $registry->model_catalog_manufacturer, $container->getService('localization.formatter'));
+		}];
 
 		// Event
 		$container['event.hook'] = ['factory' => Plugin\Event\Hook::class, 'parameters' => ['version' => $parameters['api_version'] ?? '1.0']];
 		$container['event.asynchronous.repository'] = Plugin\Event\Repository\AsynchronousDatabase::class;
 		$container['event.asynchronous'] = Plugin\Event\Asynchronous::class;
 		$container['event.loader'] = ['factory' => Plugin\Event\Loader::class, 'factory_method' => fn () => new Plugin\Event\Loader([
+			$container->getByClass(Event\Loader\Shop::class),
+			$container->getByClass(Event\Loader\Admin::class),
 			$container->getByClass(Event\Loader\Order::class),
 			$container->getByClass(Event\Loader\OrderStatus::class),
+			$container->getByClass(Event\Loader\OrderReturn::class),
 			$container->getByClass(Event\Loader\Customer::class),
-			$container->getByClass(Event\Loader\Shop::class),
 			$container->getByClass(Event\Loader\Product::class),
-			$container->getByClass(Event\Loader\Post::class),
 			$container->getByClass(Event\Loader\Extension::class),
 		])];
 		$container['event.dispatcher'] = Plugin\Event\Dispatcher::class;

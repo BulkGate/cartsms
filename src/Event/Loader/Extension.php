@@ -8,9 +8,7 @@ class Extension implements Plugin\Event\DataLoader
 {
 	use Plugin\Strict;
 
-	//todo: Kdyz je uveden datovy typ, tak DI container hlasi ze neni uvedena sluzba (datovy typ). Stejny princip je pouzit
-	//todo: napr. u BulkGate\CartSms\Eshop\Language
-	public function __construct(private /*readonly \Opencart\System\Engine\Event*/ $event)
+	public function __construct(private \Opencart\System\Engine\Event $event)
 	{
 	}
 

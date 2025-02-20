@@ -6,7 +6,7 @@ use BulkGate\Plugin;
 
 class OrderStatus implements Plugin\Event\DataLoader
 {
-	public function __construct(private $order_status)
+	public function __construct(private $order_status_model)
 	{
 	}
 
@@ -16,7 +16,7 @@ class OrderStatus implements Plugin\Event\DataLoader
 			return;
 		}
 
-		$status = $this->order_status->getOrderStatus((int) $variables['order_status_id']);
+		$status = $this->order_status_model->getOrderStatus((int) $variables['order_status_id']);
 
 		$variables['order_status'] = $status['name'];
 	}

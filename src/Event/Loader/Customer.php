@@ -6,7 +6,7 @@ use BulkGate\Plugin;
 
 class Customer implements Plugin\Event\DataLoader
 {
-	public function __construct(private $customer)
+	public function __construct(private $customer_model)
 	{
 	}
 
@@ -16,13 +16,13 @@ class Customer implements Plugin\Event\DataLoader
 			return;
 		}
 
-		$customer = $this->customer->getCustomer($variables['customer_id']);
+		$customer = $this->customer_model->getCustomer($variables['customer_id']);
 
 		$variables['customer_mobile'] = $customer['telephone'];
 		$variables['customer_email'] = $customer['email'];
 
-		$billing = $this->customer->getAddress((int) $variables['id_address_invoice']);
-		$shipping = $this->customer->getAddress((int) $variables['id_address_delivery']);
+		$billing = $this->customer_model->getAddress((int) $variables['id_address_invoice']);
+		$shipping = $this->customer_model->getAddress((int) $variables['id_address_delivery']);
 
 		$variables['customer_firstname'] = Plugin\Event\Helpers::address('firstname', $shipping, $billing);
 		$variables['customer_lastname'] = Plugin\Event\Helpers::address('lastname', $shipping, $billing);
