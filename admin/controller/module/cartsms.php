@@ -54,6 +54,15 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'sort_order'  => '1'
 		]);
 
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_send_message_box',
+			'description' => '',
+			'trigger'     => 'admin/view/sale/order_info/before',
+			'action'      => 'extension/oc_cartsms/event/hook.hookRenderSendMessageBox',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
 		//todo: tady musi byt system, aby to fungovalo z DB pro obe strany aplikace (admin/catalog)
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_send_sms',

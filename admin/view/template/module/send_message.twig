@@ -1,0 +1,14 @@
+<script async src="{{ url.get("widget/message/send/#{token}/?config=init_widget_message_send") }}"></script>
+<script>
+    function init_widget_message_send(widget) {
+        widget.setOptionsChunk({
+            props: {
+                recipients: [
+                    {{ variables | json_encode | raw }}
+                ]
+            }
+        })
+    }
+</script>
+
+<gate-send-message><button type="button" class="btn btn-primary"><i class="fa-solid fa-comment-sms"></i> New message</button></gate-send-message>

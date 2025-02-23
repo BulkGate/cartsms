@@ -21,6 +21,16 @@ class Hook extends \BulkGate\CartSms\Controller
 		];
 	}
 
+	public function hookRenderSendMessageBox(string $route, array &$data)
+	{
+		//todo: pridat do data['extensions][] ?
+		$data['tabs'][] = [
+			'title' => 'BulkGate SMS',
+			'code' => 'bulkgate_message_box',
+			'content' => $this->load->controller('extension/oc_cartsms/module/send_message', (int) $data['order_id'])
+		];
+	}
+
 	public function hookSendSms(array $params)
 	{
 		$number = $params['number'] ?? null;
