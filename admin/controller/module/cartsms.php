@@ -44,6 +44,9 @@ class Cartsms extends \BulkGate\CartSms\Controller
 		$this->di_container->getByClass(Plugin\Settings\Settings::class)->install();
 
 		$this->load->model('setting/event');
+		$this->load->model('setting/cron');
+
+		$this->model_setting_cron->addCron('cartsms_asynchronous', '', 'minute', 'extension/oc_cartsms/asynchronous/task', true);
 
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_menu',
@@ -187,8 +190,12 @@ class Cartsms extends \BulkGate\CartSms\Controller
 		$this->di_container->getByClass(Plugin\Settings\Settings::class)->uninstall();
 
 		$this->load->model('setting/event');
+		$this->load->model('setting/cron');
+
+		$this->model_setting_cron->deleteCronByCode('cartsms_asynchronous');
 
 		$this->model_setting_event->deleteEventByCode('cartsms_menu');
+		$this->model_setting_event->deleteEventByCode('cartsms_send_message_box');
 		$this->model_setting_event->deleteEventByCode('cartsms_send_sms');
 		$this->model_setting_event->deleteEventByCode('cartsms_add_order');
 		$this->model_setting_event->deleteEventByCode('cartsms_add_return');
