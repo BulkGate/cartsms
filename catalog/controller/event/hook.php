@@ -12,6 +12,11 @@ class Hook extends \BulkGate\CartSms\Controller
 
 	private array|null $order_products = null;
 
+	public function hookAsynchronousAsset(string $route, array &$data)
+	{
+		$data['analytics'][] = '<script type="text/javascript" async src="'. $this->url->link('extension/oc_cartsms/asynchronous/task') .'"></script>'; //todo: udelat twig template?
+	}
+
 	public function hookAddOrder(string $route, array $params, int $id_order)
 	{
 		$this->runHook('order', 'new', new Plugin\Event\Variables([

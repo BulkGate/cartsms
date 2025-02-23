@@ -49,6 +49,15 @@ class Cartsms extends \BulkGate\CartSms\Controller
 		$this->model_setting_cron->addCron('cartsms_asynchronous', '', 'minute', 'extension/oc_cartsms/asynchronous/task', true);
 
 		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_asynchronous',
+			'description' => '',
+			'trigger'     => 'catalog/view/common/header/before',
+			'action'      => 'extension/oc_cartsms/event/hook.hookAsynchronousAsset',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+
+		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_menu',
 			'description' => '',
 			'trigger'     => 'admin/view/common/column_left/before',
@@ -194,6 +203,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 
 		$this->model_setting_cron->deleteCronByCode('cartsms_asynchronous');
 
+		$this->model_setting_event->deleteEventByCode('cartsms_asynchronous');
 		$this->model_setting_event->deleteEventByCode('cartsms_menu');
 		$this->model_setting_event->deleteEventByCode('cartsms_send_message_box');
 		$this->model_setting_event->deleteEventByCode('cartsms_send_sms');
