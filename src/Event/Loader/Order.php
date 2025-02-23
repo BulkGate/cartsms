@@ -46,7 +46,7 @@ class Order implements Plugin\Event\DataLoader
 
 		$variables['order_carrier_name'] = $order['shipping_method']['name'] ?? null;
 		$variables['order_carrier_price'] = $order['shipping_method']['cost'] ?? null;
-		$variables['order_carrier_price_locale'] = $this->formatter->format('price', $variables['order_carrier_price']);
+		$variables['order_carrier_price_locale'] = $this->formatter->format('price', $variables['order_carrier_price'], $variables['order_currency']);
 		$variables['order_carrier_code'] = $order['shipping_method']['code'] ?? null;
 
 		$v1 = $v2 = $v3 = $v4 = $p1 = $p2 = [];
