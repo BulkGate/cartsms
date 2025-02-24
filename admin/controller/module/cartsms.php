@@ -43,9 +43,17 @@ class Cartsms extends \BulkGate\CartSms\Controller
 	{
 		$this->di_container->getByClass(Plugin\Settings\Settings::class)->install();
 
-		$this->load->model('setting/event');
-		$this->load->model('setting/cron');
+		$this->load->model('user/user_group');
+		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/oc_cartsms/module/cartsms');
+		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'modify', 'extension/oc_cartsms/module/cartsms');
 
+		// we need to enable phone number fields
+		$this->load->model('setting/setting');
+		$this->model_setting_setting->editValue('config', 'config_telephone_display', 1);
+		$this->model_setting_setting->editValue('config', 'config_telephone_required', 1);
+
+		// we register cron script
+		$this->load->model('setting/cron');
 		$this->model_setting_cron->addCron('cartsms_asynchronous', '', 'minute', 'extension/oc_cartsms/asynchronous/task', true);
 
 		$this->model_setting_event->addEvent([
@@ -198,9 +206,11 @@ class Cartsms extends \BulkGate\CartSms\Controller
 	{
 		$this->di_container->getByClass(Plugin\Settings\Settings::class)->uninstall();
 
-		$this->load->model('setting/event');
-		$this->load->model('setting/cron');
+		$this->load->model('user/user_group');
+		$this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'extension/oc_cartsms/module/cartsms');
+		$this->model_user_user_group->removePermission($this->user->getGroupId(), 'modify', 'extension/oc_cartsms/module/cartsms');
 
+		$this->load->model('setting/cron');
 		$this->model_setting_cron->deleteCronByCode('cartsms_asynchronous');
 
 		$this->model_setting_event->deleteEventByCode('cartsms_asynchronous');
