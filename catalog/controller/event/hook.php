@@ -17,6 +17,28 @@ class Hook extends \BulkGate\CartSms\Controller
 		$data['analytics'][] = '<script type="text/javascript" async src="'. $this->url->link('extension/oc_cartsms/asynchronous/task') .'"></script>'; //todo: udelat twig template?
 	}
 
+	public function hookCustomFields(string $route, array $params, array &$data)
+	{
+		$settings = $this->di_container->getByClass(Plugin\Settings\Settings::class);
+
+		if (!$settings->load('main:marketing_message_opt_in_enabled')) {
+			return;
+		}
+
+		$data[] = [
+			'custom_field_id' => 'bulkgate_marketing_message_opt_in',
+			'location' => 'account',
+			'type' => 'checkbox',
+			'required' => false,
+			//'name' => 'abc',
+			'custom_field_value' => [[
+				'custom_field_value_id' => 'bulkgate_marketing_message_opt_in', // ==
+				'custom_field_id' => 'bulkgate_marketing_message',
+				'name' => 'I consent to receiving marketing communications via SMS, Viber, RCS, WhatsApp, and other similar channels.'
+			]]
+		];
+	}
+
 	public function hookAddOrder(string $route, array $params, int $id_order)
 	{
 		$this->runHook('order', 'new', new Plugin\Event\Variables([
