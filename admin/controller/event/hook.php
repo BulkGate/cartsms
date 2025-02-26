@@ -57,6 +57,7 @@ class Hook extends \BulkGate\CartSms\Controller
 		]);
 	}
 
+	//OK
 	public function hookAddCustomer(string $route, array $params, int $id_customer)
 	{
 		$this->runHook('customer', 'new', new Plugin\Event\Variables([
@@ -65,6 +66,7 @@ class Hook extends \BulkGate\CartSms\Controller
 		]));
 	}
 
+	//OK
 	public function hookProductOutOfStock(string $route, array $params)
 	{
 		[$id_product, $data] = $params;
@@ -81,11 +83,13 @@ class Hook extends \BulkGate\CartSms\Controller
 		if ((int) $product['quantity'] === 0) {
 			$this->runHook('product', 'out-of-stock', new Plugin\Event\Variables([
 				'product_id' => $id_product,
+				'shop_id' => $data['product_store'][0],
 				'data' => $params,
 			]));
 		}
 	}
 
+	//OK
 	public function hookChangeReturnStatus(string $route, array $params)
 	{
 		[$id_return, $id_return_status] = $params;

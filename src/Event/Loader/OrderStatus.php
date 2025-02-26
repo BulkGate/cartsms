@@ -12,7 +12,7 @@ class OrderStatus implements Plugin\Event\DataLoader
 
 	public function load(Plugin\Event\Variables $variables, array $parameters = []): void
 	{
-		if (!isset($variables['order_status_id'])) {
+		if (!isset($variables['order_status_id']) || (int) $variables['order_status_id'] === 0) {
 			return;
 		}
 

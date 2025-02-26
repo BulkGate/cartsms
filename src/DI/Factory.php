@@ -15,8 +15,10 @@ class Factory implements Plugin\DI\Factory
 
 	protected static function createContainer(array $parameters = []): Plugin\DI\Container
 	{
-		bdump($parameters);
 		['registry' => $registry] = $parameters;
+		//bdump($parameters);
+		//bdump($registry->has('user'), 'HAS_USER');
+
 		$iso = $registry->language->get('code');
 
 		$container = new Plugin\DI\Container($parameters['mode'] ?? 'strict');
@@ -81,21 +83,43 @@ class Factory implements Plugin\DI\Factory
 			$registry->load->model('setting/setting');
 			$registry->load->model('localisation/language');
 
-			return new Event\Loader\Shop($registry->model_setting_setting, $registry->model_localisation_language);
+			return new Event\Loader\Shop($registry->model_setting_setting, $registry->model_localisation_language, $registry->request);
 		}];
 		$container['event.loader.order'] = ['factory' => Event\Loader\Order::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry, $container)
 		{
-			// todo: vymyslet jak resit admin/catalog [sale/order | checkout/order] -> muzu mit nejakou interni logiku, ktera bude fungovat jako adapter...
-			$registry->load->model('sale/order');
+			if ($registry->has('user')) //admin
+			{
+				$registry->load->model('sale/order');
+				$order_model = $registry->model_sale_order;
+			}
+			else
+			{
+				$registry->load->model('checkout/order');
+				$order_model = $registry->model_checkout_order;
+			}
 
-			return new Event\Loader\Order($registry->model_sale_order, $container->getService('localization.formatter'));
+			return new Event\Loader\Order($order_model, $container->getService('localization.formatter'));
 		}];
 		$container['event.loader.order_return'] = ['factory' => Event\Loader\OrderReturn::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry, $container)
 		{
-			// todo: vymyslet jak resit admin/catalog [sale/returns | account/returns] -> muzu mit nejakou interni logiku, ktera bude fungovat jako adapter...
-			$registry->load->model('sale/returns');
+			if ($registry->has('user')) //admin
+			{
+				$registry->load->model('sale/returns');
+				$return_model = $registry->model_sale_returns;
+			}
+			else
+			{
+				$registry->load->model('account/returns');
+				$return_model = $registry->model_account_returns;
+			}
 
-			return new Event\Loader\OrderReturn($registry->model_sale_returns, $container->getService('localization.formatter'));
+			return new Event\Loader\OrderReturn($return_model, $container->getService('localization.formatter'));
+		}];
+		$container['event.loader.order_return_status'] = ['factory' => Event\Loader\OrderReturnStatus::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
+		{
+			$registry->load->model('localisation/return_status');
+
+			return new Event\Loader\OrderReturnStatus($registry->model_localisation_return_status);
 		}];
 		$container['event.loader.order_status'] = ['factory' => Event\Loader\OrderStatus::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
 		{
@@ -105,9 +129,37 @@ class Factory implements Plugin\DI\Factory
 		}];
 		$container['event.loader.customer'] = ['factory' => Event\Loader\Customer::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
 		{
-			$registry->load->model('customer/customer');
+			if ($registry->has('user')) //admin
+			{
+				$registry->load->model('customer/customer');
+				$customer_model = $registry->model_customer_customer;
+			}
+			else
+			{
+				$registry->load->model('account/customer');
+				$registry->load->model('account/address');
 
-			return new Event\Loader\Customer($registry->model_customer_customer);
+				$customer_model = new class ($registry->model_account_customer, $registry->model_account_address) {
+					private $customer_id;
+
+					public function __construct(private $customer_model, private $address_model)
+					{
+					}
+
+					public function getCustomer(int $customer_id): array
+					{
+						$this->customer_id = $customer_id;
+						return $this->customer_model->getCustomer($customer_id);
+					}
+
+					public function getAddress(int $address_id): array
+					{
+						return $this->address_model->getAddress($this->customer_id, $address_id);
+					}
+				};
+			}
+
+			return new Event\Loader\Customer($customer_model);
 		}];
 		$container['event.loader.admin'] = ['factory' => Event\Loader\Admin::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
 		{
@@ -127,16 +179,28 @@ class Factory implements Plugin\DI\Factory
 		$container['event.hook'] = ['factory' => Plugin\Event\Hook::class, 'parameters' => ['version' => $parameters['api_version'] ?? '1.0']];
 		$container['event.asynchronous.repository'] = Plugin\Event\Repository\AsynchronousDatabase::class;
 		$container['event.asynchronous'] = Plugin\Event\Asynchronous::class;
-		$container['event.loader'] = ['factory' => Plugin\Event\Loader::class, 'factory_method' => fn () => new Plugin\Event\Loader([
-			$container->getByClass(Event\Loader\Shop::class),
-			$container->getByClass(Event\Loader\Admin::class),
-			$container->getByClass(Event\Loader\Order::class),
-			$container->getByClass(Event\Loader\OrderStatus::class),
-			$container->getByClass(Event\Loader\OrderReturn::class),
-			$container->getByClass(Event\Loader\Customer::class),
-			$container->getByClass(Event\Loader\Product::class),
-			$container->getByClass(Event\Loader\Extension::class),
-		])];
+
+		$container['event.loader'] = ['factory' => Plugin\Event\Loader::class, 'factory_method' => function () use ($registry, $container)
+		{
+			$loaders = [
+				$container->getByClass(Event\Loader\OrderReturn::class),
+				$container->getByClass(Event\Loader\Order::class),
+				$container->getByClass(Event\Loader\OrderStatus::class),
+				$container->getByClass(Event\Loader\Customer::class),
+				$container->getByClass(Event\Loader\Product::class),
+				$container->getByClass(Event\Loader\Shop::class),
+			];
+
+			if ($registry->has('user')) //admin
+			{
+				$loaders[] = $container->getByClass(Event\Loader\OrderReturnStatus::class);
+				$loaders[] = $container->getByClass(Event\Loader\Admin::class);
+			}
+
+			$loaders[] = $container->getByClass(Event\Loader\Extension::class);
+
+			return new Plugin\Event\Loader($loaders);
+		}];
 		$container['event.dispatcher'] = Plugin\Event\Dispatcher::class;
 
 		// IO

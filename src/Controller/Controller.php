@@ -14,11 +14,11 @@ class Controller extends \Opencart\System\Engine\Controller
 	public function __construct(...$args)
 	{
 		parent::__construct(...$args);
-
+		bdump($this->config);
 		Factory::setup(fn () => [
 			'registry' => $this->registry,
 			'db' => $this->db,
-			'debug' => true,
+			'debug' => false,
 			'dispatcher' => Plugin\Event\Dispatcher::Asset,
 			'api_version' => '1.0',
 			'module_version' => '4.0',
@@ -48,7 +48,7 @@ class Controller extends \Opencart\System\Engine\Controller
 		$run = true;
 
 		// automatically get admin
-		if ($this->user->isLogged()) {
+		if ($this->registry->has('user') && $this->user->isLogged()) {
 			$variables['employee_id'] = $this->user->getId();
 		}
 

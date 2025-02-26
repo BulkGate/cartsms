@@ -17,6 +17,7 @@ class Hook extends \BulkGate\CartSms\Controller
 		$data['analytics'][] = '<script type="text/javascript" async src="'. $this->url->link('extension/oc_cartsms/asynchronous/task') .'"></script>'; //todo: udelat twig template?
 	}
 
+	// OK
 	public function hookCustomFields(string $route, array $params, array &$data)
 	{
 		$settings = $this->di_container->getByClass(Plugin\Settings\Settings::class);
@@ -39,14 +40,20 @@ class Hook extends \BulkGate\CartSms\Controller
 		];
 	}
 
+	//OK
 	public function hookAddOrder(string $route, array $params, int $id_order)
 	{
+		[$data] = $params;
+		['store_url' => $shop_domain] = $data;
+
 		$this->runHook('order', 'new', new Plugin\Event\Variables([
 			'order_id' => $id_order,
+			'store_url' => $shop_domain,
 			'data' => $params,
 		]));
 	}
 
+	//OK
 	public function hookAddReturn(string $route, array $params, int $id_return)
 	{
 		$this->runHook('return', 'new', new Plugin\Event\Variables([
@@ -55,7 +62,7 @@ class Hook extends \BulkGate\CartSms\Controller
 		]));
 	}
 
-	//todo: uprava objednavky v back office porad emituje hook - musim vyuzit stejneho principu jako u change status atd.. /before + /after pary
+	//OK
 	public function hookProductOutOfStock(string $route, array $params)
 	{
 		[$id_order] = $params;
@@ -81,6 +88,7 @@ class Hook extends \BulkGate\CartSms\Controller
 		}
 	}
 
+	//OK
 	public function hookChangeOrderStatus(string $route, array $params)
 	{
 		[$id_order, $id_order_status] = $params;
@@ -97,6 +105,7 @@ class Hook extends \BulkGate\CartSms\Controller
 		]));
 	}
 
+	//OK
 	public function hookAddCustomer(string $route, array $params, int $id_customer)
 	{
 		$this->runHook('customer', 'new', new Plugin\Event\Variables([
@@ -105,10 +114,14 @@ class Hook extends \BulkGate\CartSms\Controller
 		]));
 	}
 
+	//OK
 	public function hookContactForm(string $route)
 	{
 		$this->runHook('contact', 'form', new Plugin\Event\Variables([
-			'route' => $route,
+			'shop_id' => $this->config->get('config_store_id'),
+			'customer_email' => $this->request->post['email'],
+			'customer_name' => $this->request->post['name'],
+			'customer_message' => $this->request->post['enquiry'],
 			'data' => $this->request->post,
 		]));
 	}

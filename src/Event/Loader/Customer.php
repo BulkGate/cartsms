@@ -16,7 +16,10 @@ class Customer implements Plugin\Event\DataLoader
 			return;
 		}
 
-		$customer = $this->customer_model->getCustomer($variables['customer_id']);
+		$customer = $this->customer_model->getCustomer((int) $variables['customer_id']);
+
+		$variables['shop_id'] ??= $customer['store_id'] ?? null;
+		$variables['lang_id'] ??= $customer['language_id'] ?? null;
 
 		$variables['customer_mobile'] = $customer['telephone'];
 		$variables['customer_email'] = $customer['email'];
@@ -32,7 +35,7 @@ class Customer implements Plugin\Event\DataLoader
 		$variables['customer_state'] = Plugin\Event\Helpers::address('zone', $shipping, $billing);
 		$variables['customer_postcode'] = Plugin\Event\Helpers::address('postcode', $shipping, $billing);
 		$variables['customer_country'] = Plugin\Event\Helpers::address('country', $shipping, $billing);
-		$variables['customer_country_id'] = Plugin\Utils\Strings::lower(Plugin\Event\Helpers::address('iso_code_2', $shipping, $billing));
+		$variables['customer_country_id'] = Plugin\Utils\Strings::lower(Plugin\Event\Helpers::address('iso_code_2', $shipping, $billing) ?? "");
 
 		$variables['customer_invoice_firstname'] = Plugin\Event\Helpers::address('firstname', $billing, $shipping);
 		$variables['customer_invoice_lastname'] = Plugin\Event\Helpers::address('lastname', $billing, $shipping);
@@ -42,7 +45,7 @@ class Customer implements Plugin\Event\DataLoader
 		$variables['customer_invoice_state'] = Plugin\Event\Helpers::address('zone', $billing, $shipping);
 		$variables['customer_invoice_postcode'] = Plugin\Event\Helpers::address('postcode', $billing, $shipping);
 		$variables['customer_invoice_country'] = Plugin\Event\Helpers::address('country', $billing, $shipping);
-		$variables['customer_invoice_country_id'] = Plugin\Utils\Strings::lower(Plugin\Event\Helpers::address('iso_code_2', $billing, $shipping));
+		$variables['customer_invoice_country_id'] = Plugin\Utils\Strings::lower(Plugin\Event\Helpers::address('iso_code_2', $billing, $shipping) ?? "");
 
 	}
 }

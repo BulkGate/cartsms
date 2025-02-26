@@ -18,6 +18,9 @@ class Product implements Plugin\Event\DataLoader
 
 		$product = $this->product_model->getProduct($variables['product_id']);
 
+		$variables['shop_id'] ??= $product['store_id'] ?? null;
+		$variables['lang_id'] ??= $product['language_id'] ?? null;
+
 		$variables['product_quantity'] = $product['quantity'];
 		$variables['product_minimal_quantity'] = $product['minimum'];
 		$variables['product_name'] = $product['name'];

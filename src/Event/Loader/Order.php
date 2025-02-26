@@ -18,9 +18,12 @@ class Order implements Plugin\Event\DataLoader
 
 		$order = $this->order_model->getOrder($variables['order_id']);
 
-		$variables['id_address_delivery'] = $order['shipping_address_id'];
-		$variables['id_address_invoice'] = $order['payment_address_id'];
-		$variables['order_status_id'] = $order['order_status_id']; //todo: je v poradku, ze status nastavujeme zde? Za me ano, protoze vzdycky tyto informace nacteme...
+		$variables['shop_id'] ??= $order['store_id'] ?? null;
+		$variables['lang_id'] ??= $order['language_id'] ?? null;
+		$variables['customer_id'] ??= $order['customer_id'] ?? null;
+		$variables['id_address_delivery'] ??= $order['shipping_address_id'] ?? null;
+		$variables['id_address_invoice'] ??= $order['payment_address_id'] ?? null;
+		$variables['order_status_id'] ??= $order['order_status_id'] ?? null;
 
 		$variables['order_currency'] = $order['currency_code'];
 		$variables['long_order_id'] = sprintf("%06d", $variables['order_id']);
