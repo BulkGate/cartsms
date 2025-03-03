@@ -12,10 +12,12 @@ class Hook extends \BulkGate\CartSms\Controller
 
 	public function hookMenu(string $route, array &$data)
 	{
+		$this->language->load('extension/oc_cartsms/module/cartsms');
+
 		$data['menus'][] = [
 			'id' => 'menu-cartsms',
 			'icon' => 'fas fa-envelope',
-			'name' => 'BulkGate SMS',
+			'name' => $this->language->get('extension_name_menu'),
 			'href' => $this->url->link('extension/oc_cartsms/module/cartsms', 'user_token=' . $this->session->data['user_token']),
 			'children' => []
 		];

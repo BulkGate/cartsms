@@ -21,6 +21,7 @@ services:
       - ./tests:/var/www/html/extension/oc_cartsms/tests
       - ./vendor:/var/www/html/extension/oc_cartsms/vendor
       - ./install.json:/var/www/html/extension/oc_cartsms/install.json
+      - ./distribution.php:/var/www/html/extension/oc_cartsms/distribution.php
 
   db:
     image: mysql:5.7

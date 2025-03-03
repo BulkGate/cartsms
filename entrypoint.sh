@@ -9,7 +9,7 @@ echo '
 --
 
 INSERT INTO `oc_extension_install` (`extension_install_id`, `extension_id`, `extension_download_id`, `name`, `description`, `code`, `version`, `author`, `link`, `status`, `date_added`)
-VALUES (2, 0, 0, "CartSMS module for OpenCart", "", "oc_cartsms", "4.0", "BulkGate", "https://www.bulkgate.com/en/integrations/cartsms-sms-module-for-opencart/", 1, "2020-08-29 15:35:39");
+VALUES (2, 0, 0, "BulkGate SMS", "", "oc_cartsms", "4.0", "BulkGate", "https://www.bulkgate.com/en/integrations/cartsms-sms-module-for-opencart/", 1, "2020-08-29 15:35:39");
 
 ' >> /var/www/html/install/opencart-en-*.sql
 
