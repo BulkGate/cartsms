@@ -2,13 +2,15 @@
 
 namespace Opencart\Admin\Controller\Extension\OcCartsms\Event;
 
+use BulkGate\CartSms\Event\State;
 use BulkGate\Plugin;
 
 require_once DIR_EXTENSION . 'oc_cartsms/vendor/autoload.php';
 
 class Hook extends \BulkGate\CartSms\Controller
 {
-	private array|null $product = null;
+	private State $product_out_of_stock_state;
+	private State $return_status_state;
 
 	public function hookMenu(string $route, array &$data)
 	{
@@ -25,12 +27,13 @@ class Hook extends \BulkGate\CartSms\Controller
 
 	public function hookRenderSendMessageBox(string $route, array &$data)
 	{
-		//todo: pridat do data['extensions][] ?
-		$data['tabs'][] = [
-			'title' => 'BulkGate SMS',
-			'code' => 'bulkgate_message_box',
-			'content' => $this->load->controller('extension/oc_cartsms/module/send_message', (int) $data['order_id'])
-		];
+		$order_id = (int) $data['order_id'];
+
+		if ($order_id === 0 || !$this->di_container->getByClass(Plugin\Settings\Settings::class)->load('static:application_token')) {
+			return;
+		}
+
+		$data['extensions'][] = $this->load->controller('extension/oc_cartsms/module/send_message', $order_id);
 	}
 
 	public function hookSendSms(array $params)
@@ -64,42 +67,56 @@ class Hook extends \BulkGate\CartSms\Controller
 	{
 		$this->runHook('customer', 'new', new Plugin\Event\Variables([
 			'customer_id' => $id_customer,
-			'data' => $params,
+			//'data' => $params,
 		]));
 	}
 
-	//OK
-	public function hookProductOutOfStock(string $route, array $params)
+	public function hookProductOutOfStockBefore(string $route, array $params)
 	{
-		[$id_product, $data] = $params;
-
-		if ($this->product === null) {
-			return;
-		} else if (!isset($this->product['quantity']) || (int) $this->product['quantity'] === 0) {
-			return;
-		}
-
+		[$id_product] = $params;
 		$this->load->model('catalog/product');
-		$product = $this->model_catalog_product->getProduct($id_product);
 
-		if ((int) $product['quantity'] === 0) {
-			$this->runHook('product', 'out-of-stock', new Plugin\Event\Variables([
-				'product_id' => $id_product,
-				'shop_id' => $data['product_store'][0],
-				'data' => $params,
-			]));
-		}
+		$this->product_out_of_stock_state = (new State(fn() => (int) $this->model_catalog_product->getProduct($id_product)['quantity']))
+			->captureInitial()
+			->setExpected(0);
 	}
 
 	//OK
-	public function hookChangeReturnStatus(string $route, array $params)
+	public function hookProductOutOfStockAfter(string $route, array $params)
+	{
+		[$id_product, $data] = $params;
+
+		$this->product_out_of_stock_state->captureActual();
+
+		if (!$this->product_out_of_stock_state->shouldRunHook()) {
+			return;
+		}
+
+		$this->runHook('product', 'out-of-stock', new Plugin\Event\Variables([
+			'product_id' => $id_product,
+			'shop_id' => $data['product_store'][0],
+			//'data' => $params,
+		]));
+	}
+
+	public function hookChangeReturnStatusBefore(string $route, array $params)
 	{
 		[$id_return, $id_return_status] = $params;
+
 		$this->load->model('sale/returns');
 
-		$return = $this->model_sale_returns->getReturn($id_return);
+		$this->return_status_state = (new State(fn() => (int) $this->model_sale_returns->getReturn($id_return)['return_status_id']))
+			->captureInitial()
+			->setExpected((int) $id_return_status);
+	}
 
-		if ((int) $return['return_status_id'] === (int) $id_return_status) {
+	public function hookChangeReturnStatusAfter(string $route, array $params)
+	{
+		[$id_return, $id_return_status] = $params;
+
+		$this->return_status_state->captureActual();
+
+		if (!$this->return_status_state->shouldRunHook()) {
 			return;
 		}
 
@@ -107,14 +124,5 @@ class Hook extends \BulkGate\CartSms\Controller
 			'return_id' => $id_return,
 			'return_status_id' => $id_return_status,
 		]));
-	}
-
-	public function loadProduct(string $route, array $params)
-	{
-		[$id_product] = $params;
-
-		$this->load->model('catalog/product');
-
-		$this->product = $this->model_catalog_product->getProduct($id_product);
 	}
 }

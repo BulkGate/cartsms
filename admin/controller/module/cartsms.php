@@ -43,6 +43,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 	{
 		$this->di_container->getByClass(Plugin\Settings\Settings::class)->install();
 
+		// enable access to module backoffice UI
 		$this->load->model('user/user_group');
 		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/oc_cartsms/module/cartsms');
 		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'modify', 'extension/oc_cartsms/module/cartsms');
@@ -52,13 +53,14 @@ class Cartsms extends \BulkGate\CartSms\Controller
 		$this->model_setting_setting->editValue('config', 'config_telephone_display', 1);
 		$this->model_setting_setting->editValue('config', 'config_telephone_required', 1);
 
-		// we register cron script
+		// we register cron script to process async tasks
 		$this->load->model('setting/cron');
 		$this->model_setting_cron->addCron('cartsms_asynchronous', '', 'minute', 'extension/oc_cartsms/asynchronous/task', true);
 
-		// register hooks
+
 		$this->load->model('setting/event');
 
+		// register custom fields for marketing messages opt-in
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_custom_fields',
 			'description' => '',
@@ -68,6 +70,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'sort_order'  => '1'
 		]);
 
+		// register asynchronous script to process async tasks
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_asynchronous',
 			'description' => '',
@@ -77,6 +80,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'sort_order'  => '1'
 		]);
 
+		// register module into menu
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_menu',
 			'description' => '',
@@ -95,7 +99,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'sort_order'  => '1'
 		]);
 
-		//todo: tady musi byt system, aby to fungovalo z DB pro obe strany aplikace (admin/catalog)
+		// user can programmatically send sms
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_send_sms',
 			'description' => '',
@@ -105,7 +109,9 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'sort_order'  => '1'
 		]);
 
-		// z back office nelze vytvorit return, protoze to hlasi chybu product_id ... z nejakeho duvodu je to 0
+
+		// RETURN:NEW
+		// todo: z back office nelze vytvorit return, protoze to hlasi chybu product_id ... z nejakeho duvodu je to 0
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_add_return',
 			'description' => '',
@@ -115,29 +121,52 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'sort_order'  => '1'
 		]);
 
+
+		// RETURN:CHANGE-STATUS
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_change_return_status',
 			'description' => '',
 			'trigger'     => 'admin/model/sale/returns.addHistory/before',
-			'action'      => 'extension/oc_cartsms/event/hook.hookChangeReturnStatus',
+			'action'      => 'extension/oc_cartsms/event/hook.hookChangeReturnStatusBefore',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_change_return_status',
+			'description' => '',
+			'trigger'     => 'admin/model/sale/returns.addHistory/after',
+			'action'      => 'extension/oc_cartsms/event/hook.hookChangeReturnStatusAfter',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
 
+
+		// ORDER:NEW
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_add_order',
 			'description' => '',
-			'trigger'     => 'catalog/model/checkout/order.addOrder/after',
-			'action'      => 'extension/oc_cartsms/event/hook.hookAddOrder',
+			'trigger'     => 'catalog/controller/checkout/success/before',
+			'action'      => 'extension/oc_cartsms/event/hook.hookAddOrderCheckoutSuccess',
+			'status'      => '1',
+			'sort_order'  => '1'
+		]);
+		$this->model_setting_event->addEvent([
+			'code'        => 'cartsms_add_order',
+			'description' => '',
+			'trigger'     => 'catalog/controller/api/order/after',
+			'action'      => 'extension/oc_cartsms/event/hook.hookAddOrderApi',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
 
+
+		// PRODUCT:OUT-OF-STOCK
+		// catalog
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_add_order_history',
 			'description' => '',
 			'trigger'     => 'catalog/model/checkout/order.addHistory/before',
-			'action'      => 'extension/oc_cartsms/event/hook.loadOrderProducts',
+			'action'      => 'extension/oc_cartsms/event/hook.hookProductOutOfStockBefore',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
@@ -145,47 +174,49 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'code'        => 'cartsms_add_order_history',
 			'description' => '',
 			'trigger'     => 'catalog/model/checkout/order.addHistory/after',
-			'action'      => 'extension/oc_cartsms/event/hook.hookProductOutOfStock',
+			'action'      => 'extension/oc_cartsms/event/hook.hookProductOutOfStockAfter',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
-
+		// admin
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_edit_product',
 			'description' => '',
 			'trigger'     => 'admin/model/catalog/product.editProduct/before',
-			'action'      => 'extension/oc_cartsms/event/hook.loadProduct',
+			'action'      => 'extension/oc_cartsms/event/hook.hookProductOutOfStockBefore',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
-
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_edit_product',
 			'description' => '',
 			'trigger'     => 'admin/model/catalog/product.editProduct/after',
-			'action'      => 'extension/oc_cartsms/event/hook.hookProductOutOfStock',
+			'action'      => 'extension/oc_cartsms/event/hook.hookProductOutOfStockAfter',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
 
+
+		// ORDER:CHANGE-STATUS
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_change_order_status',
 			'description' => '',
-			'trigger'     => 'catalog/model/checkout/order.editOrderStatusId/before',
-			'action'      => 'extension/oc_cartsms/event/hook.loadOrder',
+			'trigger'     => 'catalog/controller/api/order/before',
+			'action'      => 'extension/oc_cartsms/event/hook.hookChangeOrderStatusBefore',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
-
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_change_order_status',
 			'description' => '',
-			'trigger'     => 'catalog/model/checkout/order.editOrderStatusId/after',
-			'action'      => 'extension/oc_cartsms/event/hook.hookChangeOrderStatus',
+			'trigger'     => 'catalog/controller/api/order/after',
+			'action'      => 'extension/oc_cartsms/event/hook.hookChangeOrderStatusAfter',
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
 
+
+		// CUSTOMER:NEW
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_add_customer',
 			'description' => '',
@@ -194,7 +225,6 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'status'      => '1',
 			'sort_order'  => '1'
 		]);
-
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_add_customer',
 			'description' => '',
@@ -204,6 +234,8 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'sort_order'  => '1'
 		]);
 
+
+		// CONTACT:FORM
 		$this->model_setting_event->addEvent([
 			'code'        => 'cartsms_contact_form',
 			'description' => '',

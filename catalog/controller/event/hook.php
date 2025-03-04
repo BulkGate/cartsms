@@ -2,15 +2,16 @@
 
 namespace Opencart\Catalog\Controller\Extension\OcCartsms\Event;
 
+use BulkGate\CartSms\Event\State;
 use BulkGate\Plugin;
 
 require_once DIR_EXTENSION . 'oc_cartsms/vendor/autoload.php';
 
 class Hook extends \BulkGate\CartSms\Controller
 {
-	private array|null $order = null;
+	private State $product_out_of_stock_state;
 
-	private array|null $order_products = null;
+	private State|null $order_status_state = null;
 
 	public function hookAsynchronousAsset(string $route, array &$data)
 	{
@@ -41,15 +42,38 @@ class Hook extends \BulkGate\CartSms\Controller
 	}
 
 	//OK
-	public function hookAddOrder(string $route, array $params, int $id_order)
+	public function hookAddOrderCheckoutSuccess(string $route)
 	{
-		[$data] = $params;
-		['store_url' => $shop_domain] = $data;
+		if (!isset($this->session->data['order_id'])) {
+			return;
+		}
 
 		$this->runHook('order', 'new', new Plugin\Event\Variables([
-			'order_id' => $id_order,
-			'store_url' => $shop_domain,
-			'data' => $params,
+			'order_id' => $this->session->data['order_id'],
+			//'data' => $this->session->data, todo: tady jeste muzeme ziskat data o adrese v pripade, ze uzivatel neni prihlaseny. Prednastavime promenne? Chtelo by to asi nejaky helper...
+		]));
+	}
+
+	public function hookAddOrderApi(string $route)
+	{
+		if ($this->request->get['call'] !== 'confirm') {
+			return;
+		}
+
+		$output = Plugin\Utils\JsonArray::decode($this->response->getOutput());
+
+		if (!$output || (int) $this->request->post['order_id'] === (int) $output['order_id']) {
+			return;
+		}
+
+		$this->runHook('order', 'new', new Plugin\Event\Variables([
+			'order_id' => $output['order_id'],
+			//'response' => $output,
+			//'_GET' => $this->request->get,
+			//'_POST' => $this->request->post,
+			//'data' => $data, //todo: api/order.index neprebira zadne parametry...
+			//'output' => $output, todo: provolava se pres API, takze $outptut neni nastaveny, protoze api/order.index nic nevraci. Muzeme maximalne vyuzit response objektu
+			//'store_url' => $shop_domain,
 		]));
 	}
 
@@ -58,50 +82,79 @@ class Hook extends \BulkGate\CartSms\Controller
 	{
 		$this->runHook('return', 'new', new Plugin\Event\Variables([
 			'return_id' => $id_return,
-			'data' => $params,
 		]));
 	}
 
-	//OK
-	public function hookProductOutOfStock(string $route, array $params)
+	public function hookProductOutOfStockBefore(string $route, array $params)
 	{
 		[$id_order] = $params;
 
 		$this->load->model('checkout/order');
 		$this->load->model('catalog/product');
 
-		if ($this->order_products === null) {
+		$products = $this->model_checkout_order->getProducts($id_order);
+
+		$this->product_out_of_stock_state = (new State(fn () => array_map(fn($item) => (int) $this->model_catalog_product->getProduct($item['product_id'])['quantity'] ?? 0, array_combine(array_column($products, 'product_id'), $products))))
+			->captureInitial();
+	}
+
+	//OK
+	public function hookProductOutOfStockAfter(string $route, array $params)
+	{
+		[$id_order] = $params;
+
+		$this->product_out_of_stock_state->captureActual();
+
+		if (!$this->product_out_of_stock_state->isChanged()) {
 			return;
 		}
 
-		// zde je aktualni stav produktu
-		foreach ($this->order_products as $order_product) {
-			$product = $this->model_catalog_product->getProduct($order_product['product_id']);
+		$initial_products = $this->product_out_of_stock_state->getInitial();
+		$actual_products = $this->product_out_of_stock_state->getActual();
 
-			if ($order_product['quantity'] > 0 && $product['quantity'] < 1) {
+		foreach($actual_products as $product_id => $quantity) {
+			$initial_quantity = $initial_products[$product_id];
+
+			if ($initial_quantity && $initial_quantity !== $quantity && $quantity === 0) {
 				$this->runHook('product', 'out-of-stock', new Plugin\Event\Variables([
 					'order_id' => $id_order,
-					'product_id' => $order_product['product_id'],
-					'data' => $params,
+					'product_id' => $product_id,
+					//'data' => $params,
 				]));
 			}
 		}
 	}
 
 	//OK
-	public function hookChangeOrderStatus(string $route, array $params)
+	public function hookChangeOrderStatusBefore(string $route, array $params)
 	{
-		[$id_order, $id_order_status] = $params;
-
-		if ($this->order === null) {
+		if ($this->request->get['call'] !== 'history_add') {
 			return;
-		} elseif ((int) $this->order['order_status_id'] === (int) $id_order_status) {
+		}
+
+		$this->load->model('checkout/order');
+
+		$this->order_status_state = (new State(fn() => (int) $this->model_checkout_order->getOrder($this->request->post['order_id'])['order_status_id']))
+			->captureInitial()
+			->setExpected((int) $this->request->post['order_status_id']);
+	}
+
+	public function hookChangeOrderStatusAfter(string $route, array $params)
+	{
+		if ($this->order_status_state === null) {
+			return;
+		}
+
+		$this->order_status_state->captureActual();
+
+		if (!$this->order_status_state->shouldRunHook()) {
 			return;
 		}
 
 		$this->runHook('order', 'change-status', new Plugin\Event\Variables([
-			'order_id' => $id_order,
-			'order_status_id' => $id_order_status,
+			'order_id' => $this->request->post['order_id'],
+			'order_status_id' => $this->request->post['order_status_id'],
+			//'debug' => $this->order_status_state->debug(),
 		]));
 	}
 
@@ -110,7 +163,7 @@ class Hook extends \BulkGate\CartSms\Controller
 	{
 		$this->runHook('customer', 'new', new Plugin\Event\Variables([
 			'customer_id' => $id_customer,
-			'data' => $params,
+			//'data' => $params,
 		]));
 	}
 
@@ -122,32 +175,7 @@ class Hook extends \BulkGate\CartSms\Controller
 			'customer_email' => $this->request->post['email'],
 			'customer_name' => $this->request->post['name'],
 			'customer_message' => $this->request->post['enquiry'],
-			'data' => $this->request->post,
+			//'data' => $this->request->post,
 		]));
-	}
-
-	public function loadOrder(string $route, array $params)
-	{
-		[$id_order] = $params;
-
-		$this->load->model('checkout/order');
-
-		$this->order = $this->model_checkout_order->getOrder($id_order);
-	}
-
-	public function loadOrderProducts(string $route, array $params)
-	{
-		[$id_order] = $params;
-
-		$this->load->model('checkout/order');
-		$this->load->model('catalog/product');
-		$order_products = $this->model_checkout_order->getProducts($id_order);
-
-		foreach ($order_products as $order_product)
-		{
-			$product = $this->model_catalog_product->getProduct($order_product['product_id']);
-
-			$this->order_products[] = $product;
-		}
 	}
 }
