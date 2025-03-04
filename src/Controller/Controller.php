@@ -3,6 +3,7 @@
 namespace BulkGate\CartSms;
 
 require_once DIR_EXTENSION . 'oc_cartsms/vendor/autoload.php';
+require_once DIR_EXTENSION . 'oc_cartsms/distribution.php';
 
 use BulkGate\Plugin;
 use BulkGate\CartSms\DI\Factory;
@@ -14,17 +15,17 @@ class Controller extends \Opencart\System\Engine\Controller
 	public function __construct(...$args)
 	{
 		parent::__construct(...$args);
-		bdump($this->config);
+		//bdump($this->config);
 		Factory::setup(fn () => [
 			'registry' => $this->registry,
 			'db' => $this->db,
-			'debug' => false,
+			//'debug' => true,
 			'dispatcher' => Plugin\Event\Dispatcher::Asset,
 			'api_version' => '1.0',
 			'module_version' => '4.0',
 			'name' => $this->model_setting_setting->getValue('config_name'),
-			'url' => '',// HTTP_CATALOG,
-			'gate_url' => 'http://192.168.16.1',
+			'url' => '',
+			'gate_url' => 'http://192.168.16.1', //BulkGateWhiteLabelUrl,
 			'default_settings' => [
 				"main:dispatcher" => 'asset',
     			"main:synchronization" => 'all',
