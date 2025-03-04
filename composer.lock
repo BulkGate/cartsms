@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "53d0de7a304084b8818d70d44295ce87",
+    "content-hash": "a1fdddb02e4fbb3ec0e38e8a43fa1ada",
     "packages": [
         {
             "name": "bulkgate/plugin",
-            "version": "dev-master",
+            "version": "dev-jwt-default-parameters",
             "source": {
                 "type": "git",
                 "url": "https://github.com/BulkGate/plugin.git",
-                "reference": "f1fbe7b48261462bfc87456c71d74c5824169377"
+                "reference": "4c95faa22e4c666de819adc54086f136a4a1762f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BulkGate/plugin/zipball/f1fbe7b48261462bfc87456c71d74c5824169377",
-                "reference": "f1fbe7b48261462bfc87456c71d74c5824169377",
+                "url": "https://api.github.com/repos/BulkGate/plugin/zipball/4c95faa22e4c666de819adc54086f136a4a1762f",
+                "reference": "4c95faa22e4c666de819adc54086f136a4a1762f",
                 "shasum": ""
             },
             "require": {
@@ -35,7 +35,6 @@
                 "rector/rector": "^0.16",
                 "tracy/tracy": "^2.9"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "classmap": [
@@ -52,9 +51,9 @@
             "description": "Meta package for BulkGate plugins",
             "support": {
                 "issues": "https://github.com/BulkGate/plugin/issues",
-                "source": "https://github.com/BulkGate/plugin/tree/1.0.1"
+                "source": "https://github.com/BulkGate/plugin/tree/jwt-default-parameters"
             },
-            "time": "2023-12-06T12:19:36+00:00"
+            "time": "2025-03-04T12:49:35+00:00"
         }
     ],
     "packages-dev": [
@@ -269,16 +268,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.12.16",
+            "version": "1.12.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e0bb5cb78545aae631220735aa706eac633a6be9"
+                "reference": "c42ba9bab7a940ed00092ecb1c77bad98896d789"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e0bb5cb78545aae631220735aa706eac633a6be9",
-                "reference": "e0bb5cb78545aae631220735aa706eac633a6be9",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c42ba9bab7a940ed00092ecb1c77bad98896d789",
+                "reference": "c42ba9bab7a940ed00092ecb1c77bad98896d789",
                 "shasum": ""
             },
             "require": {
@@ -323,7 +322,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-21T14:50:05+00:00"
+            "time": "2025-02-19T15:42:21+00:00"
         },
         {
             "name": "tracy/tracy",
