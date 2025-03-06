@@ -14,3 +14,7 @@ const BulkGateWhiteLabelModuleWebsite = 'https://www.bulkgate.com/en/integration
 
 // Your BulkGate's Affilitate ID. This can be found in your BulkGate account > Affiliate program.
 const BulkGateAffiliateId = '';
+
+/** Internals */
+
+const BulkGateModuleVersion = '4.0.0';

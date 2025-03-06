@@ -15,14 +15,15 @@ class Controller extends \Opencart\System\Engine\Controller
 	public function __construct(...$args)
 	{
 		parent::__construct(...$args);
-		//bdump($this->config);
+
 		Factory::setup(fn () => [
 			'registry' => $this->registry,
 			'db' => $this->db,
 			//'debug' => true,
 			'dispatcher' => Plugin\Event\Dispatcher::Asset,
 			'api_version' => '1.0',
-			'module_version' => '4.0',
+			'platform_version' => VERSION,
+			'module_version' => BulkGateModuleVersion,
 			'name' => $this->model_setting_setting->getValue('config_name'),
 			'url' => '',
 			'gate_url' => 'http://192.168.16.1', //BulkGateWhiteLabelUrl,
