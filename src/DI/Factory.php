@@ -41,7 +41,8 @@ class Factory implements Plugin\DI\Factory
 			$service->setup(is_int($parameters['logger_limit'] ?? null) ? $parameters['logger_limit'] : 100);
 			return $service;
 		}];
-		$container['debug.logger'] = Plugin\Debug\Logger::class;
+		$container['debug.logger'] = ['factory' => Plugin\Debug\Logger::class, 'parameters' => ['platform_version' => $parameters['platform_version'], 'module_version' => $parameters['module_version']], 'factory_method' => fn (...$args) => new Plugin\Debug\Logger(...$args)];
+
 		$container['debug.requirements'] = Plugin\Debug\Requirements::class;
 
 		// Ajax

@@ -299,7 +299,7 @@ class Cartsms extends \BulkGate\CartSms\Controller
 
 		$requirements = $requirements->run([
 			$requirements->same('{"message":"BulkGate API"}', file_get_contents($url->get('api/welcome')), 'Api Connection'),
-			$requirements->same(true, version_compare(VERSION, '4.0.0', '>='), 'Opencart ver. >= 4.0.0'),
+			$requirements->same(true, version_compare($logger->getPlatformVersion(), '4.0.0', '>='), 'Opencart ver. >= 4.0.0'),
 		]);
 
 		$this->response->setOutput($this->load->view('extension/oc_cartsms/module/debug', [
@@ -308,7 +308,8 @@ class Cartsms extends \BulkGate\CartSms\Controller
 			'footer' => $this->load->controller('common/footer'),
 			'requirements' => $requirements,
 			'errors' => array_reverse($logger->getList()),
-			'opencart_version' => VERSION,
+			'platform_version' => $logger->getPlatformVersion(),
+			'module_version' => $logger->getModuleVersion(),
 			'php_version' => phpversion(),
 			'url' => $url->get(),
 		]));
