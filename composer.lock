@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BulkGate/plugin.git",
-                "reference": "4672ea1e10fd7808ed14d8b0cc6a3d371a7cdf18"
+                "reference": "200cd2ef36827de9fbe90eff275bb8c8a82f255c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BulkGate/plugin/zipball/4672ea1e10fd7808ed14d8b0cc6a3d371a7cdf18",
-                "reference": "4672ea1e10fd7808ed14d8b0cc6a3d371a7cdf18",
+                "url": "https://api.github.com/repos/BulkGate/plugin/zipball/200cd2ef36827de9fbe90eff275bb8c8a82f255c",
+                "reference": "200cd2ef36827de9fbe90eff275bb8c8a82f255c",
                 "shasum": ""
             },
             "require": {
@@ -53,7 +53,7 @@
                 "issues": "https://github.com/BulkGate/plugin/issues",
                 "source": "https://github.com/BulkGate/plugin/tree/debug-logging"
             },
-            "time": "2025-03-06T13:06:21+00:00"
+            "time": "2025-03-06T13:49:17+00:00"
         }
     ],
     "packages-dev": [
