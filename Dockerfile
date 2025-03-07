@@ -1,5 +1,7 @@
 FROM php:8.2-apache
+ARG XDEBUG_VERSION=3.4.0
 ARG OC_VERSION
+
 ENV OC_VERSION=${OC_VERSION:-latest}
 
 RUN echo "Opencart  version: ${OC_VERSION}"
@@ -37,6 +39,8 @@ RUN apt-get update \
              libzip-dev \
              libcurl3-dev \
              libwebp-dev \
+  && pecl install xdebug-${XDEBUG_VERSION} \
+  && docker-php-ext-enable xdebug \
   && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
   && docker-php-ext-install -j$(nproc) gd zip mysqli curl \
   && docker-php-ext-enable gd zip mysqli curl
