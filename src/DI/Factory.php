@@ -234,7 +234,15 @@ class Factory implements Plugin\DI\Factory
 		$container['settings.synchronizer'] = Plugin\Settings\Synchronizer::class;
 
 		// User
-		$container['user.sign'] = Plugin\User\Sign::class;
+		$container['user.sign'] = ['factory' => Plugin\User\Sign::class, 'factory_method' => function (...$services) use ($container, $parameters): Plugin\User\Sign
+		{
+			$sign = new Plugin\User\Sign(...$services);
+			$sign->setDefaultParameters([
+				'referer_id' => BulkGateAffiliateId,
+			]);
+
+			return $sign;
+		}];
 
 		return $container;
 	}
