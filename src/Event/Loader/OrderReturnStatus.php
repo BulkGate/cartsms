@@ -6,6 +6,7 @@ use BulkGate\Plugin;
 
 class OrderReturnStatus implements Plugin\Event\DataLoader
 {
+	/** @param \Opencart\Admin\Model\Localisation\ReturnStatus $order_return_status_model */
 	public function __construct(private $order_return_status_model)
 	{
 	}
