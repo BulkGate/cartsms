@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Event\Loader;
 
@@ -6,6 +6,7 @@ use BulkGate\Plugin;
 
 class OrderReturn implements Plugin\Event\DataLoader
 {
+	/** @param \Opencart\Catalog\Model\Account\Returns | \Opencart\Admin\Model\Sale\Returns $order_return_model */
 	public function __construct(private $order_return_model, private Plugin\Localization\Formatter $formatter)
 	{
 	}
@@ -16,7 +17,7 @@ class OrderReturn implements Plugin\Event\DataLoader
 			return;
 		}
 
-		$order_return = $this->order_return_model->getReturn($variables['return_id']);
+		$order_return = $this->order_return_model->getReturn((int) $variables['return_id']);
 
 		$variables['lang_id'] ??= $order_return['language_id'] ?? null;
 		$variables['order_id'] ??= $order_return['order_id'] ?? null;
