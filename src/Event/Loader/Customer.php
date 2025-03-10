@@ -6,6 +6,7 @@ use BulkGate\Plugin;
 
 class Customer implements Plugin\Event\DataLoader
 {
+	/** @param \Opencart\Catalog\Model\Account\Customer | \Opencart\Admin\Model\Customer\Customer $customer_model*/
 	public function __construct(private $customer_model)
 	{
 	}
@@ -21,10 +22,10 @@ class Customer implements Plugin\Event\DataLoader
 		$variables['shop_id'] ??= $customer['store_id'] ?? null;
 		$variables['lang_id'] ??= $customer['language_id'] ?? null;
 
-		$variables['customer_mobile'] = $customer['telephone'];
-		$variables['customer_email'] = $customer['email'];
+		$variables['customer_mobile'] ??= $customer['telephone'];
+		$variables['customer_email'] ??= $customer['email'];
 
-		$billing = $this->customer_model->getAddress((int) $variables['id_address_invoice']);
+		/*$billing = $this->customer_model->getAddress((int) $variables['id_address_invoice']);
 		$shipping = $this->customer_model->getAddress((int) $variables['id_address_delivery']);
 
 		$variables['customer_firstname'] = Plugin\Event\Helpers::address('firstname', $shipping, $billing);
@@ -45,7 +46,7 @@ class Customer implements Plugin\Event\DataLoader
 		$variables['customer_invoice_state'] = Plugin\Event\Helpers::address('zone', $billing, $shipping);
 		$variables['customer_invoice_postcode'] = Plugin\Event\Helpers::address('postcode', $billing, $shipping);
 		$variables['customer_invoice_country'] = Plugin\Event\Helpers::address('country', $billing, $shipping);
-		$variables['customer_invoice_country_id'] = Plugin\Utils\Strings::lower(Plugin\Event\Helpers::address('iso_code_2', $billing, $shipping) ?? "");
+		$variables['customer_invoice_country_id'] = Plugin\Utils\Strings::lower(Plugin\Event\Helpers::address('iso_code_2', $billing, $shipping) ?? "");*/
 
 	}
 }
