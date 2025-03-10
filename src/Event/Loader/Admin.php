@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Event\Loader;
 
@@ -6,6 +6,7 @@ use BulkGate\Plugin;
 
 class Admin implements Plugin\Event\DataLoader
 {
+	/** @param \Opencart\Admin\Model\User\User $admin_model */
 	public function __construct(private $admin_model)
 	{
 	}
@@ -16,7 +17,7 @@ class Admin implements Plugin\Event\DataLoader
 			return;
 		}
 
-		$admin = $this->admin_model->getUser($variables['employee_id']);
+		$admin = $this->admin_model->getUser((int) $variables['employee_id']);
 
 		$variables['employee_email'] = $admin['email'];
 		$variables['employee_firstname'] = $admin['firstname'];
