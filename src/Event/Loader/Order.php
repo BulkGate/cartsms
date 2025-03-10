@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Event\Loader;
 
@@ -6,6 +6,9 @@ use BulkGate\Plugin;
 
 class Order implements Plugin\Event\DataLoader
 {
+	/**
+	 * @param \Opencart\Catalog\Model\Checkout\Order | \Opencart\Admin\Model\Sale\Order $order_model
+	 */
 	public function __construct(private $order_model, private Plugin\Localization\Formatter $formatter)
 	{
 	}
@@ -16,7 +19,13 @@ class Order implements Plugin\Event\DataLoader
 			return;
 		}
 
-		$order = $this->order_model->getOrder($variables['order_id']);
+		$order = $this->order_model->getOrder((int) $variables['order_id']);
+
+		$this->address($order, $variables, '', 'shipping_');
+		$this->address($order, $variables, 'invoice_', 'payment_');
+
+		$variables['customer_mobile'] = $order['telephone'];
+		$variables['customer_email'] = $order['email'];
 
 		$variables['shop_id'] ??= $order['store_id'] ?? null;
 		$variables['lang_id'] ??= $order['language_id'] ?? null;
@@ -85,5 +94,19 @@ class Order implements Plugin\Event\DataLoader
 
 		$variables['order_smsprinter1'] = implode(';', $p1);
 		$variables['order_smsprinter2'] = implode(';', $p2);
+	}
+
+	private function address(array $order, Plugin\Event\Variables $variables, string $variables_prefix, string $order_prefix): void
+	{
+		$variables["customer_{$variables_prefix}firstname"] = $order["{$order_prefix}firstname"];
+		$variables["customer_{$variables_prefix}lastname"] = $order["{$order_prefix}lastname"];
+		$variables["customer_{$variables_prefix}company"] = $order["{$order_prefix}company"];
+		$address_2 = $order["{$order_prefix}address_2"] ?? '';
+		$variables["customer_{$variables_prefix}address"] = $order["{$order_prefix}address_1"] . ($address_2 ? ', ' . $address_2 : '');
+		$variables["customer_{$variables_prefix}city"] = $order["{$order_prefix}city"];
+		$variables["customer_{$variables_prefix}state"] = $order["{$order_prefix}zone"];
+		$variables["customer_{$variables_prefix}postcode"] = $order["{$order_prefix}postcode"];
+		$variables["customer_{$variables_prefix}country"] = $order["{$order_prefix}country"];
+		$variables["customer_{$variables_prefix}country_id"] = Plugin\Utils\Strings::lower($order["{$order_prefix}iso_code_2"] ?? "");
 	}
 }
