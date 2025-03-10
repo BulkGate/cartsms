@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Event\Loader;
 
@@ -6,6 +6,8 @@ use BulkGate\Plugin;
 
 class Product implements Plugin\Event\DataLoader
 {
+	/** @param \Opencart\Catalog\Model\Catalog\Product | \Opencart\Admin\Model\Catalog\Product $product_model*/
+	/** @param \Opencart\Catalog\Model\Catalog\Manufacturer | \Opencart\Admin\Model\Catalog\Manufacturer $manufacturer_model */
 	public function __construct(private $product_model, private $manufacturer_model, private Plugin\Localization\Formatter $formatter)
 	{
 	}
@@ -16,7 +18,7 @@ class Product implements Plugin\Event\DataLoader
 			return;
 		}
 
-		$product = $this->product_model->getProduct($variables['product_id']);
+		$product = $this->product_model->getProduct((int) $variables['product_id']);
 
 		$variables['shop_id'] ??= $product['store_id'] ?? null;
 		$variables['lang_id'] ??= $product['language_id'] ?? null;
@@ -34,7 +36,7 @@ class Product implements Plugin\Event\DataLoader
 
 		//todo: TAX - ceny jsou uvedeny bez DPH
 		$variables['product_price'] = $product['price'];
-		$variables['product_price_locale'] = $this->formatter->format('price', (float) $product['price'], $variables['shop_currency']);
+		$variables['product_price_locale'] = $this->formatter->format('price', (float) $product['price'], $variables['order_currency'] ?? $variables['shop_currency']);
 
 		$variables['product_ean'] = $product['ean'];
 		$variables['product_upc'] = $product['upc'];
