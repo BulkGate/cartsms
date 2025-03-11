@@ -7,12 +7,11 @@ namespace BulkGate\CartSms\Eshop;
  * @link https://www.bulkgate.com/
  */
 
-use BulkGate\Plugin\Strict;
-use BulkGate\Plugin\Eshop\Configuration as EshopConfiguration;
+use BulkGate\Plugin;
 
-class Configuration implements EshopConfiguration
+class Configuration implements Plugin\Eshop\Configuration
 {
-	use Strict;
+	use Plugin\Strict;
 
 	private string $version_number;
 
@@ -20,9 +19,7 @@ class Configuration implements EshopConfiguration
 
 	private string $site_name;
 
-	/**
-	 * @param array<string, string> $plugin_data
-	 */
+
 	public function __construct(string $version_number, string $site_url, string $site_name)
 	{
 		$this->version_number = $version_number;
