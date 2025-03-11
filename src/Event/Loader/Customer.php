@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Event\Loader;
 
@@ -6,7 +6,9 @@ use BulkGate\Plugin;
 
 class Customer implements Plugin\Event\DataLoader
 {
-	/** @param \Opencart\Catalog\Model\Account\Customer | \Opencart\Admin\Model\Customer\Customer $customer_model*/
+	/**
+	 * @param \Opencart\Catalog\Model\Account\Customer | \Opencart\Admin\Model\Customer\Customer $customer_model
+	 */
 	public function __construct(private $customer_model)
 	{
 	}

@@ -6,8 +6,12 @@ use BulkGate\Plugin;
 
 class Shop implements Plugin\Event\DataLoader
 {
-	/** @param \Opencart\Catalog\Model\Setting\Setting | \Opencart\Admin\Model\Setting\Setting $settings_model */
-	/** @param \Opencart\Catalog\Model\Localisation\Language | \Opencart\Admin\Model\Localisation\Language $language_model */
+	/**
+	 * @param \Opencart\Catalog\Model\Setting\Setting | \Opencart\Admin\Model\Setting\Setting $settings_model
+	 * @param \Opencart\Catalog\Model\Localisation\Language | \Opencart\Admin\Model\Localisation\Language $language_model
+	 * @param \Opencart\System\Library\Request $request
+	 */
+
 	public function __construct(private $settings_model, private $language_model, private $request)
 	{
 	}
@@ -26,6 +30,6 @@ class Shop implements Plugin\Event\DataLoader
 		$variables['shop_currency'] = $settings['config_currency'];
 		$variables['shop_phone'] = $settings['config_telephone'];
 		$variables['lang_id'] ??= ($this->language_model->getLanguageByCode($this->request->get['language'] ?? $this->request->cookie['language'] ?? $settings['config_language_catalog']))['language_id'];
-		$variables['lang_iso'] = $this->language_model->getLanguage($variables['lang_id'])['code'];
+		$variables['lang_iso'] = $this->language_model->getLanguage((int) $variables['lang_id'])['code'];
 	}
 }

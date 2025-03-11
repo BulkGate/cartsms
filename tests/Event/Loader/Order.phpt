@@ -185,8 +185,17 @@ class OrderTest extends TestCase
 		$formatter->shouldReceive('format')->with('price', 44.8, 'USD')->andReturn('product_price_locale');
 
 		$order_loader = new \BulkGate\CartSms\Event\Loader\Order($order_model, $formatter);
-		$order_loader->load($variables = new Plugin\Event\Variables(['order_id' => 1, 'shop_id' => 2, 'lang_id' => 3, 'customer_id' => 4, 'id_address_delivery' => 5, 'id_address_invoice' => 6, 'order_status_id' => 7]));
+		$order_loader->load($variables = new Plugin\Event\Variables([
+			'order_id' => 1,
+			'shop_id' => 2,
+			'lang_id' => 3,
+			'customer_id' => 4,
+			'id_address_delivery' => 5,
+			'id_address_invoice' => 6,
+			'order_status_id' => 7
+		]));
 
+		Assert::same(1, $variables['order_id']);
 		Assert::same(2, $variables['shop_id']);
 		Assert::same(3, $variables['lang_id']);
 		Assert::same(4, $variables['customer_id']);
@@ -194,6 +203,8 @@ class OrderTest extends TestCase
 		Assert::same(6, $variables['id_address_invoice']);
 		Assert::same(7, $variables['order_status_id']);
 	}
+
+	//todo: address tests
 
 	public function testNoLoad(): void
 	{

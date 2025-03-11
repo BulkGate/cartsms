@@ -6,7 +6,9 @@ use BulkGate\Plugin;
 
 class OrderStatus implements Plugin\Event\DataLoader
 {
-	/** @param \Opencart\Catalog\Model\Localisation\OrderStatus | \Opencart\Admin\Model\Localisation\OrderStatus $order_status_model*/
+	/**
+	 * @param \Opencart\Catalog\Model\Localisation\OrderStatus | \Opencart\Admin\Model\Localisation\OrderStatus $order_status_model
+	 */
 	public function __construct(private $order_status_model)
 	{
 	}

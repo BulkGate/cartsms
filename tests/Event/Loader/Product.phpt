@@ -12,12 +12,26 @@ require_once __DIR__ . '/../../bootstrap.php';
 class ProductTest extends TestCase
 {
 
-	// todo: rozdelit do Admin a Catalog testu?
-
 	public function testProductId(): void
 	{
 		$product_model = Mockery::mock(\Opencart\Catalog\Model\Catalog\Product::class);
-		$product_model->shouldReceive('getProduct')->with(Mockery::on(fn ($arg) => $arg === 1))->andReturn(['store_id' => 1, 'language_id' => 1, 'manufacturer_id' => 1, 'quantity' => 'quantity', 'minimum' => 'min_quantity', 'name' => 'Product', 'model' => 'Model', 'description' => 'description', 'price' => 20, 'ean' => 'ean', 'upc' => 'upc', 'isbn' => 'isbn', 'jan' => 'jan', 'mpn' => 'mpn', 'sku' => 'sku']);
+		$product_model->shouldReceive('getProduct')->with(Mockery::on(fn ($arg) => $arg === 1))->andReturn([
+			'store_id' => 1,
+			'language_id' => 1,
+			'manufacturer_id' => 1,
+			'quantity' => 'quantity',
+			'minimum' => 'min_quantity',
+			'name' => 'Product',
+			'model' => 'Model',
+			'description' => 'description',
+			'price' => 20,
+			'ean' => 'ean',
+			'upc' => 'upc',
+			'isbn' => 'isbn',
+			'jan' => 'jan',
+			'mpn' => 'mpn',
+			'sku' => 'sku'
+		]);
 
 		$manufacturer_model = Mockery::mock(\Opencart\Catalog\Model\Catalog\Manufacturer::class);
 		$manufacturer_model->shouldReceive('getManufacturer')->with(Mockery::on(fn ($arg) => $arg === 1))->andReturn(['name' => 'Manufacturer']);
@@ -54,7 +68,23 @@ class ProductTest extends TestCase
 	public function testOverwrite()
 	{
 		$product_model = Mockery::mock(\Opencart\Catalog\Model\Catalog\Product::class);
-		$product_model->shouldReceive('getProduct')->with(Mockery::on(fn ($arg) => $arg === 1))->andReturn(['store_id' => 1, 'language_id' => 1, 'manufacturer_id' => 1, 'quantity' => 'quantity', 'minimum' => 'min_quantity', 'name' => 'Product', 'model' => 'Model', 'description' => 'description', 'price' => 20, 'ean' => 'ean', 'upc' => 'upc', 'isbn' => 'isbn', 'jan' => 'jan', 'mpn' => 'mpn', 'sku' => 'sku']);
+		$product_model->shouldReceive('getProduct')->with(Mockery::on(fn ($arg) => $arg === 1))->andReturn([
+			'store_id' => 1,
+			'language_id' => 1,
+			'manufacturer_id' => 1,
+			'quantity' => 'quantity',
+			'minimum' => 'min_quantity',
+			'name' => 'Product',
+			'model' => 'Model',
+			'description' => 'description',
+			'price' => 20,
+			'ean' => 'ean',
+			'upc' => 'upc',
+			'isbn' => 'isbn',
+			'jan' => 'jan',
+			'mpn' => 'mpn',
+			'sku' => 'sku'
+		]);
 
 		$manufacturer_model = Mockery::mock(\Opencart\Catalog\Model\Catalog\Manufacturer::class);
 		$manufacturer_model->shouldReceive('getManufacturer')->with(Mockery::on(fn ($arg) => $arg === 1))->andReturn(['name' => 'Manufacturer']);
@@ -65,6 +95,7 @@ class ProductTest extends TestCase
 		$product_loader = new \BulkGate\CartSms\Event\Loader\Product($product_model, $manufacturer_model, $formatter);
 		$product_loader->load($variables = new Plugin\Event\Variables(['product_id' => 1, 'shop_id' => 2, 'lang_id' => 3, 'shop_currency' => 'USD']));
 
+		Assert::same(1, $variables['product_id']);
 		Assert::same(2, $variables['shop_id']);
 		Assert::same(3, $variables['lang_id']);
 	}

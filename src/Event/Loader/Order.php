@@ -96,6 +96,9 @@ class Order implements Plugin\Event\DataLoader
 		$variables['order_smsprinter2'] = implode(';', $p2);
 	}
 
+	/**
+	 * @param array<string, mixed> $order
+	 */
 	private function address(array $order, Plugin\Event\Variables $variables, string $variables_prefix, string $order_prefix): void
 	{
 		$variables["customer_{$variables_prefix}firstname"] = $order["{$order_prefix}firstname"];

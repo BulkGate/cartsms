@@ -6,8 +6,10 @@ use BulkGate\Plugin;
 
 class Product implements Plugin\Event\DataLoader
 {
-	/** @param \Opencart\Catalog\Model\Catalog\Product | \Opencart\Admin\Model\Catalog\Product $product_model*/
-	/** @param \Opencart\Catalog\Model\Catalog\Manufacturer | \Opencart\Admin\Model\Catalog\Manufacturer $manufacturer_model */
+	/**
+	 * @param \Opencart\Catalog\Model\Catalog\Product | \Opencart\Admin\Model\Catalog\Product $product_model
+	 * @param \Opencart\Catalog\Model\Catalog\Manufacturer | \Opencart\Admin\Model\Catalog\Manufacturer $manufacturer_model
+	 */
 	public function __construct(private $product_model, private $manufacturer_model, private Plugin\Localization\Formatter $formatter)
 	{
 	}
