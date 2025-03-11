@@ -8,13 +8,15 @@ namespace BulkGate\CartSms\Eshop;
  */
 
 use BulkGate\Plugin;
-use BulkGate\Plugin\Strict;
 
 class ReturnStatus implements Plugin\Eshop\ReturnStatus
 {
-	use Strict;
+	use Plugin\Strict;
 
-	public function __construct(private readonly \Opencart\Admin\Model\Localisation\ReturnStatus | \Opencart\System\Engine\Proxy $return_status)
+	/**
+	 * @param \Opencart\Admin\Model\Localisation\ReturnStatus $return_status
+	 */
+	public function __construct(private $return_status)
 	{
 	}
 
