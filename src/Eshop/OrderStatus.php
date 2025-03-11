@@ -8,13 +8,13 @@ namespace BulkGate\CartSms\Eshop;
  */
 
 use BulkGate\Plugin;
-use BulkGate\Plugin\Strict;
 
 class OrderStatus implements Plugin\Eshop\OrderStatus
 {
-	use Strict;
+	use Plugin\Strict;
 
-	public function __construct(private readonly \Opencart\Admin\Model\Localisation\OrderStatus | \Opencart\System\Engine\Proxy $order_status)
+	/** @param \Opencart\Admin\Model\Localisation\OrderStatus $order_status */
+	public function __construct(private $order_status)
 	{
 	}
 
