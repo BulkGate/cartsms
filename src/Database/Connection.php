@@ -9,15 +9,14 @@ namespace BulkGate\CartSms\Database;
  * @link https://www.bulkgate.com/
  */
 
-use BulkGate\Plugin\Database;
-use BulkGate\Plugin\Database\ResultCollection;
-use BulkGate\Plugin\Strict;
-use Opencart\System\Library\DB;
+use BulkGate\Plugin;
+use Opencart\System\Library\DB as OpencartDB;
 
-class Connection implements Database\Connection
+class Connection implements Plugin\Database\Connection
 {
-	use Strict;
+	use Plugin\Strict;
 
+	/** @var OpencartDB */
 	private $db;
 
 	/**
@@ -25,14 +24,14 @@ class Connection implements Database\Connection
 	 */
 	private array $sql = [];
 
-	public function __construct(DB $db)
+	public function __construct(OpencartDB $db)
 	{
 		$this->db = $db;
 	}
 
-	public function execute(string $sql): ?ResultCollection
+	public function execute(string $sql): Plugin\Database\ResultCollection
 	{
-		$output = new ResultCollection();
+		$output = new Plugin\Database\ResultCollection();
 
 		$this->sql[] = $sql;
 
@@ -45,7 +44,7 @@ class Connection implements Database\Connection
 		return $output;
 	}
 
-	public function lastId()
+	public function lastId(): int
 	{
 		return $this->db->getLastId();
 	}

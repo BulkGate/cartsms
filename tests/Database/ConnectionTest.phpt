@@ -14,22 +14,22 @@ use Tester\{Assert, TestCase};
 
 
 require_once __DIR__ . '/../bootstrap.php';
+define('DB_PREFIX', 'oc_');
 
 /**
  * @testCase
  */
-class ConnectionWordpressTest extends TestCase
+class ConnectionTest extends TestCase
 {
-	public function __construct()
-	{
-		define('DB_PREFIX', 'oc_');
-	}
 
 	public function testExecute(): void
 	{
 		$connection = new Connection($db = Mockery::mock(DB::class));
 		$db->shouldReceive('query')->with('SQL')->once()->andReturn([
-			'rows' => [['id' => 4], ['id' => 5]]
+			'rows' => [
+				['id' => 4],
+				['id' => 5]
+			]
 		]);
 
 		[$e1, $e2] = $connection->execute('SQL')->toArray();
@@ -69,7 +69,7 @@ class ConnectionWordpressTest extends TestCase
 
 	public function testPrefix(): void
 	{
-		$connection = new Connection($db = Mockery::mock(DB::class));
+		$connection = new Connection(Mockery::mock(DB::class));
 
 		Assert::same('oc_', $connection->prefix());
 	}
@@ -77,7 +77,7 @@ class ConnectionWordpressTest extends TestCase
 
 	public function testTable(): void
 	{
-		$connection = new Connection($db = Mockery::mock(DB::class));
+		$connection = new Connection(Mockery::mock(DB::class));
 
 		Assert::same('oc_users', $connection->table('users'));
 	}
@@ -89,4 +89,4 @@ class ConnectionWordpressTest extends TestCase
 	}
 }
 
-(new ConnectionWordpressTest())->run();
+(new ConnectionTest())->run();
