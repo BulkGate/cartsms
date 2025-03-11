@@ -1,16 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Ajax;
 
 use BulkGate\Plugin;
-use BulkGate\Plugin\Settings\Helpers;
 
 class PluginSettings
 {
-	public function __construct(private readonly Plugin\Settings\Settings $settings, private readonly Plugin\Settings\Synchronizer $synchronizer)
+	public function __construct(private Plugin\Settings\Settings $settings, private Plugin\Settings\Synchronizer $synchronizer)
 	{
 	}
 
+	/**
+	 * @param array<array-key, mixed> $unsafe_post_data
+	 * @return array{data:array<array-key, mixed>}
+	 */
 	public function run(array $unsafe_post_data, callable $on_language_change): array
 	{
 		$output = [];

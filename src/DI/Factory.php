@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\DI;
 
@@ -9,10 +9,15 @@ use BulkGate\CartSms\Event;
 use BulkGate\CartSms\Database;
 use Tracy\Debugger;
 
+use function strtolower, class_exists, is_int;
+
 class Factory implements Plugin\DI\Factory
 {
 	use Plugin\DI\FactoryStatic;
 
+	/**
+	 * @param array<array-key, mixed> $parameters
+	 */
 	protected static function createContainer(array $parameters = []): Plugin\DI\Container
 	{
 		['registry' => $registry] = $parameters;
@@ -32,14 +37,15 @@ class Factory implements Plugin\DI\Factory
 		}
 
 		// Database
-		$container['database.connection'] = ['factory' => Database\Connection::class, 'parameters' => ['db' => $parameters['db']]];
+		$container['database.connection'] = ['factory' => Database\Connection::class, 'parameters' => ['db' => $registry->get('db')]];
 
 		// Debug
 		$container['debug.repository.logger'] = ['factory' => Plugin\Debug\Repository\LoggerSettings::class, 'factory_method' => function () use ($container, $parameters): Plugin\Debug\Repository\LoggerSettings
 		{
-			$service = new Plugin\Debug\Repository\LoggerSettings($container->getService('settings.settings'));
-			$service->setup(is_int($parameters['logger_limit'] ?? null) ? $parameters['logger_limit'] : 100);
-			return $service;
+			$logger = new Plugin\Debug\Repository\LoggerSettings($container->getByClass(Plugin\Settings\Settings::class));
+			$logger->setup(is_int($parameters['logger_limit'] ?? null) ? $parameters['logger_limit'] : 100);
+
+			return $logger;
 		}];
 		$container['debug.logger'] = Plugin\Debug\Logger::class;
 		$container['debug.requirements'] = Plugin\Debug\Requirements::class;
@@ -73,7 +79,7 @@ class Factory implements Plugin\DI\Factory
 		{
 			$registry->load->model('setting/store');
 
-			return new Eshop\MultiStore($container->getService('eshop.configuration'), $registry->model_setting_store);
+			return new Eshop\MultiStore($container->getByClass(Eshop\Configuration::class), $registry->model_setting_store);
 		}];
 
 		// Event loaders
@@ -98,7 +104,7 @@ class Factory implements Plugin\DI\Factory
 				$order_model = $registry->model_checkout_order;
 			}
 
-			return new Event\Loader\Order($order_model, $container->getService('localization.formatter'));
+			return new Event\Loader\Order($order_model, $container->getByClass(Plugin\Localization\Formatter::class));
 		}];
 		$container['event.loader.order_return'] = ['factory' => Event\Loader\OrderReturn::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry, $container)
 		{
@@ -113,7 +119,7 @@ class Factory implements Plugin\DI\Factory
 				$return_model = $registry->model_account_returns;
 			}
 
-			return new Event\Loader\OrderReturn($return_model, $container->getService('localization.formatter'));
+			return new Event\Loader\OrderReturn($return_model, $container->getByClass(Plugin\Localization\Formatter::class));
 		}];
 		$container['event.loader.order_return_status'] = ['factory' => Event\Loader\OrderReturnStatus::class, 'auto_wiring' => false, 'factory_method' => function() use ($registry)
 		{
@@ -172,7 +178,7 @@ class Factory implements Plugin\DI\Factory
 			$registry->load->model('catalog/product');
 			$registry->load->model('catalog/manufacturer');
 
-			return new Event\Loader\Product($registry->model_catalog_product, $registry->model_catalog_manufacturer, $container->getService('localization.formatter'));
+			return new Event\Loader\Product($registry->model_catalog_product, $registry->model_catalog_manufacturer, $container->getByClass(Plugin\Localization\Formatter::class));
 		}];
 
 		// Event
@@ -206,12 +212,9 @@ class Factory implements Plugin\DI\Factory
 		// IO
 		$container['io.connection.factory'] = ['factory' => Plugin\IO\ConnectionFactory::class, 'factory_method' => function () use ($container): Plugin\IO\ConnectionFactory
 		{
-			/**
-			 * @var Eshop\Configuration $configuration
-			 */
-			$configuration = $container->getService('eshop.configuration');
+			$configuration = $container->getByClass(Eshop\Configuration::class);
 
-			return new Plugin\IO\ConnectionFactory($configuration->url(), $configuration->product(), $container->getService('settings.settings'));
+			return new Plugin\IO\ConnectionFactory($configuration->url(), $configuration->product(), $container->getByClass(Plugin\Settings\Settings::class));
 		}];
 		$container['io.connection'] = ['factory' => Plugin\IO\Connection::class, 'factory_method' => fn () => $container->getByClass(Plugin\IO\ConnectionFactory::class)->create()];
 		$container['io.url'] = ['factory' => Plugin\IO\Url::class, 'parameters' => ['url' => $parameters['gate_url'] ?? 'https://portal.bulkgate.com']];

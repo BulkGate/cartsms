@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Ajax;
 
@@ -8,10 +8,13 @@ class Authenticate
 {
 	use Plugin\Strict;
 
-	public function __construct(private readonly Plugin\Settings\Settings $settings, private readonly Plugin\User\Sign $sign)
+	public function __construct(private Plugin\Settings\Settings $settings, private Plugin\User\Sign $sign)
 	{
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function run(string $invalid_redirect): array
 	{
 
