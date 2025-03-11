@@ -3,6 +3,7 @@
 namespace BulkGate\CartSms\Eshop\Test;
 
 use BulkGate\CartSms\Eshop\ReturnStatus;
+use Mockery;
 use Tester\Assert;
 use Tester\TestCase;
 
@@ -12,7 +13,7 @@ class ReturnStatusTest extends TestCase
 {
 	public function testReturnStatus(): void
 	{
-		$return_status_model = \Mockery::mock(\Opencart\Admin\Model\Localisation\ReturnStatus::class);
+		$return_status_model = Mockery::mock(\Opencart\Admin\Model\Localisation\ReturnStatus::class);
 		$return_status_model->shouldReceive('getReturnStatuses')->withNoArgs()->andReturn([
 			['return_status_id' => 1, 'name' => 'Pending'],
 			['return_status_id' => 2, 'name' => 'Completed'],

@@ -3,6 +3,7 @@
 namespace BulkGate\CartSms\Eshop\Test;
 
 use BulkGate\CartSms\Eshop\OrderStatus;
+use Mockery;
 use Tester\Assert;
 use Tester\TestCase;
 
@@ -12,7 +13,7 @@ class OrderStatusTest extends TestCase
 {
 	public function testOrderStatus(): void
 	{
-		$order_status_model = \Mockery::mock(\Opencart\Admin\Model\Localisation\OrderStatus::class);
+		$order_status_model = Mockery::mock(\Opencart\Admin\Model\Localisation\OrderStatus::class);
 		$order_status_model->shouldReceive('getOrderStatuses')->withNoArgs()->andReturn([
 			['order_status_id' => 1, 'name' => 'Pending'],
 			['order_status_id' => 2, 'name' => 'Completed'],
