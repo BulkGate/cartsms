@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Event;
 
@@ -14,6 +14,7 @@ class State
 
 	private mixed $initial = null; // value to be used for comparison with actual value
 
+	/** @var callable $loader */
 	private $loader;
 
 
@@ -63,7 +64,7 @@ class State
 		return $this->expected;
 	}
 
-	private function callLoader(...$loader_params): mixed
+	private function callLoader(mixed ...$loader_params): mixed
 	{
 		return call_user_func($this->loader, ...$loader_params);
 	}
@@ -78,6 +79,7 @@ class State
 		return $this->initial !== $this->actual;
 	}
 
+	/** @return array{initial: mixed, expected: mixed, actual: mixed} */
 	public function debug(): array
 	{
 		return [
