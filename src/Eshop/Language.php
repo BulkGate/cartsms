@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace BulkGate\CartSms\Eshop;
 
@@ -8,13 +8,15 @@ namespace BulkGate\CartSms\Eshop;
  */
 
 use BulkGate\Plugin;
-use BulkGate\Plugin\Strict;
 
 class Language implements Plugin\Eshop\Language
 {
-	use Strict;
+	use Plugin\Strict;
 
-	public function __construct(private readonly \Opencart\Admin\Model\Localisation\Language | \Opencart\System\Engine\Proxy $language)
+	/**
+	 * @param \Opencart\Admin\Model\Localisation\Language $language
+	 */
+	public function __construct(private $language)
 	{
 	}
 
@@ -33,7 +35,7 @@ class Language implements Plugin\Eshop\Language
 
 	public function get(?int $id = 1): string
 	{
-		return $this->language->getLanguage($id)['code'];
+		return $this->language->getLanguage((int) $id)['code'];
 	}
 
 
