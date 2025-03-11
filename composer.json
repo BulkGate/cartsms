@@ -3,7 +3,7 @@
   "type": "opencart-module",
   "minimum-stability": "RC",
   "require": {
-    "php": ">= 7.4",
+    "php": ">= 8.0",
     "bulkgate/plugin": "dev-master"
   },
   "require-dev": {
