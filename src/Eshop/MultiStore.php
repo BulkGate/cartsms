@@ -8,13 +8,15 @@ namespace BulkGate\CartSms\Eshop;
  */
 
 use BulkGate\Plugin;
-use BulkGate\Plugin\Strict;
 
 class MultiStore implements Plugin\Eshop\MultiStore
 {
-	use Strict;
+	use Plugin\Strict;
 
-	public function __construct(private readonly Configuration $configuration, private readonly \Opencart\Admin\Model\Setting\Store | \Opencart\System\Engine\Proxy $store)
+	/**
+	 * @param \Opencart\Admin\Model\Setting\Store $store
+	 */
+	public function __construct(private Configuration $configuration, private $store)
 	{
 	}
 
