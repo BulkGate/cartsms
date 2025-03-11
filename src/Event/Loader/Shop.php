@@ -12,7 +12,7 @@ class Shop implements Plugin\Event\DataLoader
 	 * @param \Opencart\System\Library\Request $request
 	 */
 
-	public function __construct(private $settings_model, private $language_model, private $request)
+	public function __construct(private mixed $settings_model, private mixed $language_model, private mixed $request)
 	{
 	}
 

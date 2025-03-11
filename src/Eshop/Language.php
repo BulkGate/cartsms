@@ -16,7 +16,7 @@ class Language implements Plugin\Eshop\Language
 	/**
 	 * @param \Opencart\Admin\Model\Localisation\Language $language
 	 */
-	public function __construct(private $language)
+	public function __construct(private mixed $language)
 	{
 	}
 

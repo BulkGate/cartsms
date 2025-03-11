@@ -9,7 +9,7 @@ class Customer implements Plugin\Event\DataLoader
 	/**
 	 * @param \Opencart\Catalog\Model\Account\Customer | \Opencart\Admin\Model\Customer\Customer $customer_model
 	 */
-	public function __construct(private $customer_model)
+	public function __construct(private mixed $customer_model)
 	{
 	}
 

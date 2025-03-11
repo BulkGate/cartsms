@@ -14,7 +14,7 @@ class OrderStatus implements Plugin\Eshop\OrderStatus
 	use Plugin\Strict;
 
 	/** @param \Opencart\Admin\Model\Localisation\OrderStatus $order_status */
-	public function __construct(private $order_status)
+	public function __construct(private mixed $order_status)
 	{
 	}
 

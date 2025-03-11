@@ -9,7 +9,7 @@ class Admin implements Plugin\Event\DataLoader
 	/**
 	 * @param \Opencart\Admin\Model\User\User $admin_model
 	 */
-	public function __construct(private $admin_model)
+	public function __construct(private mixed $admin_model)
 	{
 	}
 

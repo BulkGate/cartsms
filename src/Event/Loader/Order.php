@@ -9,7 +9,7 @@ class Order implements Plugin\Event\DataLoader
 	/**
 	 * @param \Opencart\Catalog\Model\Checkout\Order | \Opencart\Admin\Model\Sale\Order $order_model
 	 */
-	public function __construct(private $order_model, private Plugin\Localization\Formatter $formatter)
+	public function __construct(private mixed $order_model, private Plugin\Localization\Formatter $formatter)
 	{
 	}
 

@@ -16,7 +16,7 @@ class MultiStore implements Plugin\Eshop\MultiStore
 	/**
 	 * @param \Opencart\Admin\Model\Setting\Store $store
 	 */
-	public function __construct(private Configuration $configuration, private $store)
+	public function __construct(private Configuration $configuration, private mixed $store)
 	{
 	}
 

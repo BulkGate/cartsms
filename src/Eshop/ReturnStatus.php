@@ -16,7 +16,7 @@ class ReturnStatus implements Plugin\Eshop\ReturnStatus
 	/**
 	 * @param \Opencart\Admin\Model\Localisation\ReturnStatus $return_status
 	 */
-	public function __construct(private $return_status)
+	public function __construct(private mixed $return_status)
 	{
 	}
 

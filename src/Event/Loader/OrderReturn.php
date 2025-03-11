@@ -7,7 +7,7 @@ use BulkGate\Plugin;
 class OrderReturn implements Plugin\Event\DataLoader
 {
 	/** @param \Opencart\Catalog\Model\Account\Returns | \Opencart\Admin\Model\Sale\Returns $order_return_model */
-	public function __construct(private $order_return_model, private Plugin\Localization\Formatter $formatter)
+	public function __construct(private mixed $order_return_model, private Plugin\Localization\Formatter $formatter)
 	{
 	}
 
