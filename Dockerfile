@@ -1,14 +1,17 @@
 FROM php:8.2-apache
 ARG XDEBUG_VERSION=3.4.0
-ARG OC_VERSION
+ARG OC_VERSION=latest
 
-ENV OC_VERSION=${OC_VERSION:-latest}
+LABEL org.opencontainers.image.source=https://github.com/bulkgate/cartsms
+LABEL opencart_version=${OC_VERSION}
+
+ENV OC_VERSION=${OC_VERSION}
 
 RUN echo "Opencart  version: ${OC_VERSION}"
 
 WORKDIR /tmp
 
-RUN curl -L "https://github.com/opencart/opencart/archive/refs/tags/${OC_VERSION}.tar.gz" -o opencart.tar.gz && \
+RUN curl -fL "https://github.com/opencart/opencart/archive/refs/tags/${OC_VERSION}.tar.gz" -o opencart.tar.gz && \
     curl -sS https://raw.githubusercontent.com/composer/getcomposer.org/f3108f64b4e1c1ce6eb462b159956461592b3e3e/web/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
