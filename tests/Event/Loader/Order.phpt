@@ -24,12 +24,13 @@ class OrderTest extends TestCase
 			'shipping_address_id' => 1,
 			'payment_address_id' => 1,
 			'order_status_id' => 1,
+
 			'shipping_firstname' => 'firstname_shipping',
 			'shipping_lastname' => 'lastname_shipping',
 			'shipping_company' => 'company_shipping',
 			'shipping_address_1' => 'address_1_shipping',
 			'shipping_city' => 'city_shipping',
-			'shipping_zone' => 'zone_shipping',
+			'shipping_zone' => 'state_shipping',
 			'shipping_postcode' => 'postcode_shipping',
 			'shipping_country' => 'country_shipping',
 			'shipping_iso_code_2' => 'iso_code_shipping',
@@ -39,7 +40,7 @@ class OrderTest extends TestCase
 			'payment_company' => 'company_payment',
 			'payment_address_1' => 'address_1_payment',
 			'payment_city' => 'city_payment',
-			'payment_zone' => 'zone_payment',
+			'payment_zone' => 'state_payment',
 			'payment_postcode' => 'postcode_payment',
 			'payment_country' => 'country_payment',
 			'payment_iso_code_2' => 'iso_code_payment',
@@ -70,14 +71,14 @@ class OrderTest extends TestCase
 		$order_loader->load($variables = new Plugin\Event\Variables(['order_id' => 1]));
 		$order_loader->load(new Plugin\Event\Variables(['order_id' => '1']));
 
-		Assert::same([
+		Assert::equal([
 			'order_id' => 1,
 			'customer_firstname' => 'firstname_shipping',
 			'customer_lastname' => 'lastname_shipping',
 			'customer_company' => 'company_shipping',
 			'customer_address' => 'address_1_shipping',
 			'customer_city' => 'city_shipping',
-			'customer_state' => 'zone_shipping',
+			'customer_state' => 'state_shipping',
 			'customer_postcode' => 'postcode_shipping',
 			'customer_country' => 'country_shipping',
 			'customer_country_id' => 'iso_code_shipping',
@@ -86,7 +87,7 @@ class OrderTest extends TestCase
 			'customer_invoice_company' => 'company_payment',
 			'customer_invoice_address' => 'address_1_payment',
 			'customer_invoice_city' => 'city_payment',
-			'customer_invoice_state' => 'zone_payment',
+			'customer_invoice_state' => 'state_payment',
 			'customer_invoice_postcode' => 'postcode_payment',
 			'customer_invoice_country' => 'country_payment',
 			'customer_invoice_country_id' => 'iso_code_payment',
@@ -148,20 +149,20 @@ class OrderTest extends TestCase
 			'shipping_company' => 'company_shipping',
 			'shipping_address_1' => 'address_1_shipping',
 			'shipping_city' => 'city_shipping',
-			'shipping_zone' => 'zone_shipping',
+			'shipping_zone' => 'state_shipping',
 			'shipping_postcode' => 'postcode_shipping',
 			'shipping_country' => 'country_shipping',
 			'shipping_iso_code_2' => 'iso_code_shipping',
 
-			'payment_firstname' => 'firstname_payment',
-			'payment_lastname' => 'lastname_payment',
-			'payment_company' => 'company_payment',
-			'payment_address_1' => 'address_1_payment',
-			'payment_city' => 'city_payment',
-			'payment_zone' => 'zone_payment',
-			'payment_postcode' => 'postcode_payment',
-			'payment_country' => 'country_payment',
-			'payment_iso_code_2' => 'iso_code_payment',
+			'payment_firstname' => '',
+			'payment_lastname' => '',
+			'payment_company' => '',
+			'payment_address_1' => '',
+			'payment_city' => '',
+			'payment_zone' => '',
+			'payment_postcode' => '',
+			'payment_country' => '',
+			'payment_iso_code_2' => '',
 
 			'telephone' => 'telephone',
 			'email' => 'email',
@@ -202,9 +203,18 @@ class OrderTest extends TestCase
 		Assert::same(5, $variables['id_address_delivery']);
 		Assert::same(6, $variables['id_address_invoice']);
 		Assert::same(7, $variables['order_status_id']);
+
+		Assert::same('firstname_shipping', $variables['customer_invoice_firstname']);
+		Assert::same('lastname_shipping', $variables['customer_invoice_lastname']);
+		Assert::same('company_shipping', $variables['customer_invoice_company']);
+		Assert::same('address_1_shipping', $variables['customer_invoice_address']);
+		Assert::same('city_shipping', $variables['customer_invoice_city']);
+		Assert::same('state_shipping', $variables['customer_invoice_state']);
+		Assert::same('postcode_shipping', $variables['customer_invoice_postcode']);
+		Assert::same('country_shipping', $variables['customer_invoice_country']);
+		Assert::same('iso_code_shipping', $variables['customer_invoice_country_id']);
 	}
 
-	//todo: address tests
 
 	public function testNoLoad(): void
 	{

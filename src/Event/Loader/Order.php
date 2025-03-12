@@ -21,8 +21,21 @@ class Order implements Plugin\Event\DataLoader
 
 		$order = $this->order_model->getOrder((int) $variables['order_id']);
 
-		$this->address($order, $variables, '', 'shipping_');
-		$this->address($order, $variables, 'invoice_', 'payment_');
+		$shipping_address = $this->address($order, 'shipping_');
+		$billing_address = $this->address($order, 'payment_');
+
+		foreach ($shipping_address as $key => $value) {
+			if ($key === 'address_2') {
+				continue;
+			}
+			if ($key === 'address_1') {
+				$variables["customer_address"] = Plugin\Event\Helpers::joinStreet('address_1', 'address_2', $shipping_address, $billing_address);
+				$variables["customer_invoice_address"] = Plugin\Event\Helpers::joinStreet('address_1', 'address_2', $billing_address, $shipping_address);
+				continue;
+			}
+			$variables["customer_{$key}"] = Plugin\Event\Helpers::address($key, $shipping_address, $billing_address);
+			$variables["customer_invoice_{$key}"] = Plugin\Event\Helpers::address($key, $billing_address, $shipping_address);
+		}
 
 		$variables['customer_mobile'] = $order['telephone'];
 		$variables['customer_email'] = $order['email'];
@@ -98,18 +111,24 @@ class Order implements Plugin\Event\DataLoader
 
 	/**
 	 * @param array<string, mixed> $order
+	 * @return array<string, mixed>
 	 */
-	private function address(array $order, Plugin\Event\Variables $variables, string $variables_prefix, string $order_prefix): void
+	private function address(array $order, string $order_prefix): array
 	{
-		$variables["customer_{$variables_prefix}firstname"] = $order["{$order_prefix}firstname"];
-		$variables["customer_{$variables_prefix}lastname"] = $order["{$order_prefix}lastname"];
-		$variables["customer_{$variables_prefix}company"] = $order["{$order_prefix}company"];
-		$address_2 = $order["{$order_prefix}address_2"] ?? '';
-		$variables["customer_{$variables_prefix}address"] = $order["{$order_prefix}address_1"] . ($address_2 ? ', ' . $address_2 : '');
-		$variables["customer_{$variables_prefix}city"] = $order["{$order_prefix}city"];
-		$variables["customer_{$variables_prefix}state"] = $order["{$order_prefix}zone"];
-		$variables["customer_{$variables_prefix}postcode"] = $order["{$order_prefix}postcode"];
-		$variables["customer_{$variables_prefix}country"] = $order["{$order_prefix}country"];
-		$variables["customer_{$variables_prefix}country_id"] = Plugin\Utils\Strings::lower($order["{$order_prefix}iso_code_2"] ?? "");
+		$address = [];
+
+		$address['firstname'] = $order["{$order_prefix}firstname"];
+		$address['lastname'] = $order["{$order_prefix}lastname"];
+		$address['company'] = $order["{$order_prefix}company"];
+		$address['address_1'] = $order["{$order_prefix}address_1"];
+		$address['address_2'] = $order["{$order_prefix}address_2"] ?? '';
+		$address['city'] = $order["{$order_prefix}city"];
+		$address['state'] = $order["{$order_prefix}zone"];
+		$address['postcode'] = $order["{$order_prefix}postcode"];
+		$address['country'] = $order["{$order_prefix}country"];
+		$address['country_id'] = Plugin\Utils\Strings::lower($order["{$order_prefix}iso_code_2"] ?? "");
+
+		return $address;
+
 	}
 }
