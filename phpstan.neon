@@ -3,4 +3,4 @@ parameters:
 	paths:
 		- src
 	scanDirectories:
-		- /var/www/html
+		- /var/www/html # opencart installation
