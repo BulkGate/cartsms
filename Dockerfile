@@ -36,6 +36,7 @@ RUN apt-get update \
   && apt-get install -y \
              wait-for-it \
              unzip \
+             libicu-dev \
              libfreetype6-dev \
              libjpeg62-turbo-dev \
              libpng-dev \
@@ -45,8 +46,8 @@ RUN apt-get update \
   && pecl install xdebug-${XDEBUG_VERSION} \
   && docker-php-ext-enable xdebug \
   && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-  && docker-php-ext-install -j$(nproc) gd zip mysqli curl \
-  && docker-php-ext-enable gd zip mysqli curl
+  && docker-php-ext-install -j$(nproc) gd zip mysqli curl intl \
+  && docker-php-ext-enable gd zip mysqli curl intl
 
 RUN a2enmod rewrite
 
