@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 ARG XDEBUG_VERSION=3.4.0
-ARG OC_VERSION=latest
+ARG OC_VERSION=4.1.0.0
 
 LABEL org.opencontainers.image.source=https://github.com/bulkgate/cartsms
 LABEL opencart_version=${OC_VERSION}
@@ -52,5 +52,6 @@ RUN apt-get update \
 RUN a2enmod rewrite
 
 COPY --chmod=777 entrypoint.sh /usr/sbin
+COPY install-extension.php /tmp
 
 ENTRYPOINT ["entrypoint.sh"]
