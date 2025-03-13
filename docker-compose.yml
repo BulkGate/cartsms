@@ -1,0 +1,34 @@
+services:
+  opencart:
+    image: ghcr.io/bulkgate/cartsms:${OC_VERSION:-latest}
+    depends_on:
+      - db
+    ports:
+      - "8083:80"
+    volumes:
+      - ./admin:/var/www/html/extension/oc_cartsms/admin
+      - ./catalog:/var/www/html/extension/oc_cartsms/catalog
+      - ./src:/var/www/html/extension/oc_cartsms/src
+      - ./tests:/var/www/html/extension/oc_cartsms/tests
+      - ./vendor:/var/www/html/extension/oc_cartsms/vendor
+      - ./install.json:/var/www/html/extension/oc_cartsms/install.json
+      - ./distribution.php:/var/www/html/extension/oc_cartsms/distribution.php
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: opencart
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - db:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    environment:
+      ADMINER_DESIGN: "nette"
+      ADMINER_DEFAULT_SERVER: "db"
+    ports:
+      - "8090:8080"
+
+volumes:
+  db:

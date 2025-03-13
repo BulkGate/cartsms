@@ -1,0 +1,134 @@
+<?php declare(strict_types=1);
+
+namespace BulkGate\CartSms\Event\Loader;
+
+use BulkGate\Plugin;
+
+class Order implements Plugin\Event\DataLoader
+{
+	/**
+	 * @param \Opencart\Catalog\Model\Checkout\Order | \Opencart\Admin\Model\Sale\Order $order_model
+	 */
+	public function __construct(private mixed $order_model, private Plugin\Localization\Formatter $formatter)
+	{
+	}
+
+	public function load(Plugin\Event\Variables $variables, array $parameters = []): void
+	{
+		if (!isset($variables['order_id'])) {
+			return;
+		}
+
+		$order = $this->order_model->getOrder((int) $variables['order_id']);
+
+		$shipping_address = $this->address($order, 'shipping_');
+		$billing_address = $this->address($order, 'payment_');
+
+		foreach ($shipping_address as $key => $value) {
+			if ($key === 'address_2') {
+				continue;
+			}
+			if ($key === 'address_1') {
+				$variables["customer_address"] = Plugin\Event\Helpers::joinStreet('address_1', 'address_2', $shipping_address, $billing_address);
+				$variables["customer_invoice_address"] = Plugin\Event\Helpers::joinStreet('address_1', 'address_2', $billing_address, $shipping_address);
+				continue;
+			}
+			$variables["customer_{$key}"] = Plugin\Event\Helpers::address($key, $shipping_address, $billing_address);
+			$variables["customer_invoice_{$key}"] = Plugin\Event\Helpers::address($key, $billing_address, $shipping_address);
+		}
+
+		$variables['customer_mobile'] = $order['telephone'];
+		$variables['customer_email'] = $order['email'];
+
+		$variables['shop_id'] ??= $order['store_id'] ?? null;
+		$variables['lang_id'] ??= $order['language_id'] ?? null;
+		$variables['customer_id'] ??= $order['customer_id'] ?? null;
+		$variables['id_address_delivery'] ??= $order['shipping_address_id'] ?? null;
+		$variables['id_address_invoice'] ??= $order['payment_address_id'] ?? null;
+		$variables['order_status_id'] ??= $order['order_status_id'] ?? null;
+
+		$variables['order_currency'] = $order['currency_code'];
+		$variables['long_order_id'] = sprintf("%06d", $variables['order_id']);
+		$variables['order_total_locale'] = $this->formatter->format('price', $order['total'], $variables['order_currency']);
+		$variables['order_total_paid'] = $order['total'];
+		$variables['order_payment'] = $order['payment_method']['name'];
+		$variables['order_tracking'] = $order['tracking'];
+		$variables['order_message'] = $order['comment'];
+
+		$timestamp = strtotime($order['date_added']) ?: time();
+
+		$variables['order_date'] = $this->formatter->format('date', $order['date_added']);
+		$variables['order_date1'] = date('d.m.Y', $timestamp);
+		$variables['order_date2'] = date('d/m/Y', $timestamp);
+		$variables['order_date3'] = date('d-m-Y', $timestamp);
+		$variables['order_date4'] = date('Y-m-d', $timestamp);
+		$variables['order_date5'] = date('m.d.Y', $timestamp);
+		$variables['order_date6'] = date('m/d/Y', $timestamp);
+		$variables['order_date7'] = date('m-d-Y', $timestamp);
+		$variables['order_datetime'] = $this->formatter->format('datetime', $order['date_added']);
+		$variables['order_time'] = $this->formatter->format('time', $order['date_added']);
+		$variables['order_time1'] = date('H:i:s', $timestamp);
+
+		$variables['order_carrier_name'] = $order['shipping_method']['name'] ?? null;
+		$variables['order_carrier_price'] = $order['shipping_method']['cost'] ?? null;
+		$variables['order_carrier_price_locale'] = $this->formatter->format('price', $variables['order_carrier_price'], $variables['order_currency']);
+		$variables['order_carrier_code'] = $order['shipping_method']['code'] ?? null;
+
+		$v1 = $v2 = $v3 = $v4 = $p1 = $p2 = [];
+
+		foreach ($order['products'] as $product)
+		{
+			$qty = $product['quantity'];
+			$name = $product['name'];
+			$model = $product['model'];
+			$total = $product['total'] + $product['tax'];
+
+			$product_id = $product['order_product_id'];
+			$total_formatted = $this->formatter->format('price', $total, $variables['order_currency']);
+
+			$v1[] = "{$qty}x $name $model $total_formatted";
+			$v2[] = "{$qty}x $name $total_formatted";
+			$v3[] = "{$qty}x ($product_id) $name $model $total_formatted";
+			$v4[] = "{$qty}x $model $total_formatted";
+
+			$p1[] = "$qty,$name,$total";
+			$p2[] = "$qty;$name;$total";
+		}
+
+		$variables['order_products1'] = implode('; ', $v1);
+		$variables['order_products2'] = implode('; ', $v2);
+		$variables['order_products3'] = implode('; ', $v3);
+		$variables['order_products4'] = implode('; ', $v4);
+
+		$variables['order_products5'] = implode("\n", $v1);
+		$variables['order_products6'] = implode("\n", $v2);
+		$variables['order_products7'] = implode("\n", $v3);
+		$variables['order_products8'] = implode("\n", $v4);
+
+		$variables['order_smsprinter1'] = implode(';', $p1);
+		$variables['order_smsprinter2'] = implode(';', $p2);
+	}
+
+	/**
+	 * @param array<string, mixed> $order
+	 * @return array<string, mixed>
+	 */
+	private function address(array $order, string $order_prefix): array
+	{
+		$address = [];
+
+		$address['firstname'] = $order["{$order_prefix}firstname"];
+		$address['lastname'] = $order["{$order_prefix}lastname"];
+		$address['company'] = $order["{$order_prefix}company"];
+		$address['address_1'] = $order["{$order_prefix}address_1"];
+		$address['address_2'] = $order["{$order_prefix}address_2"] ?? '';
+		$address['city'] = $order["{$order_prefix}city"];
+		$address['state'] = $order["{$order_prefix}zone"];
+		$address['postcode'] = $order["{$order_prefix}postcode"];
+		$address['country'] = $order["{$order_prefix}country"];
+		$address['country_id'] = Plugin\Utils\Strings::lower($order["{$order_prefix}iso_code_2"] ?? "");
+
+		return $address;
+
+	}
+}
