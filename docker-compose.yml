@@ -1,19 +1,10 @@
 services:
   opencart:
-    build:
-      dockerfile: Dockerfile
-      args:
-        OC_VERSION: ${OC_VERSION:-latest}
-    image: opencart:${OC_VERSION:-latest}
+    image: ghcr.io/bulkgate/cartsms:${OC_VERSION:-latest}
     depends_on:
       - db
     ports:
       - "8083:80"
-#    user: www-data
-#    env_file:
-#      - ./.env
-#    environment:
-#      OC_VERSION: 3.1
     volumes:
       - ./admin:/var/www/html/extension/oc_cartsms/admin
       - ./catalog:/var/www/html/extension/oc_cartsms/catalog
